@@ -3,46 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <title>Submapa de Nación</title>
-  <link rel="stylesheet" href="../assets/styles.css" />
+  <link rel="stylesheet" href="/assets/styles.css" />
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
     }
 
     #mapa-nacion {
-      width: 100%;
-      max-width: 1200px;
-      height: auto;
-      margin: 0 auto;
-      display: block;
-      border: 2px solid #444;
-    }
-
-    .marcador {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      background-color: red;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      cursor: pointer;
-    }
-
-    #contenedor-mapa {
       position: relative;
       width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
+      height: 100vh;
+      background-color: #222;
+      overflow: hidden;
+    }
+
+    #mapa-nacion img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .icono-mapa {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      user-select: none;
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
     }
   </style>
 </head>
 <body>
-  <h2 style="text-align: center;">Submapa de Nación</h2>
-  
-  <div id="contenedor-mapa">
-    <img id="mapa-nacion" src="../assets/mapa_nacion_base.JPG" alt="Mapa de la nación" />
-    <!-- Aquí podrán colocarse marcadores -->
+  <div id="mapa-nacion">
+    <img src="/assets/mapa_nacion_base.JPG" alt="Submapa de Nación" id="imagen-nacion" />
+
+    <!-- Marcadores visuales solo de ejemplo -->
+    <img src="/assets/iconos/ciudad.svg" class="icono-mapa" style="top: 40%; left: 55%;" title="Ciudad" />
+    <img src="/assets/iconos/pueblo.svg" class="icono-mapa" style="top: 60%; left: 30%;" title="Pueblo" />
+    <img src="/assets/iconos/entrada_underdark.svg" class="icono-mapa" style="top: 70%; left: 80%;" title="Entrada a Infraoscuridad" />
+    <img src="/assets/iconos/mazmorra.svg" class="icono-mapa" style="top: 25%; left: 40%;" title="Mazmorra" />
   </div>
 </body>
 </html>
