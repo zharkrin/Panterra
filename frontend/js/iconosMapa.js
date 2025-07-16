@@ -1,13 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapa = document.getElementById("mapa-nacion");
 
-  // Cargar posiciones desde localStorage
-  const posicionesGuardadas = JSON.parse(localStorage.getItem("iconosEnMapa")) || [];
+  // Detectar ID de nación desde la URL (ej: /naciones/5.html → id = 5)
+  const urlPartes = window.location.pathname.split("/");
+  const archivo = urlPartes[urlPartes.length - 1];
+  const nacionID = archivo.split(".")[0] || "base"; // base si no hay número
+
+  const keyLocalStorage = `iconosEnMapa_nacion_${nacionID}`;
+
+  const posicionesGuardadas = JSON.parse(localStorage.getItem(keyLocalStorage)) || [];
   posicionesGuardadas.forEach(({ tipo, x, y }) => {
     colocarIcono(tipo, x, y);
   });
 
-  // Manejar arrastre desde barra
   const iconos = document.querySelectorAll(".icono-draggable");
   iconos.forEach(icono => {
     icono.addEventListener("dragstart", e => {
@@ -15,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Permitir soltar en mapa
   mapa.addEventListener("dragover", e => e.preventDefault());
   mapa.addEventListener("drop", e => {
     e.preventDefault();
@@ -37,6 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function guardarIcono(tipo, x, y) {
     posicionesGuardadas.push({ tipo, x, y });
-    localStorage.setItem("iconosEnMapa", JSON.stringify(posicionesGuardadas));
+    localStorage.setItem(keyLocalStorage, JSON.stringify(posicionesGuardadas));
   }
 });
