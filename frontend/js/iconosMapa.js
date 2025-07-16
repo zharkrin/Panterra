@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const mapContainer = document.getElementById("map-container");
   const iconos = document.querySelectorAll(".icono-draggable");
+  const botonBorrarTodos = document.getElementById("borrar-todos");
 
   // Cargar iconos guardados (localStorage)
   const guardados = JSON.parse(localStorage.getItem("iconosMapa")) || [];
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     img.style.top = `${y}px`;
     img.dataset.tipo = tipo;
 
-    // Confirmación antes de borrar
+    // Confirmación antes de borrar individualmente
     img.addEventListener("contextmenu", e => {
       e.preventDefault();
       const confirmacion = confirm("¿Estás seguro de que deseas eliminar este icono?");
@@ -57,4 +58,13 @@ document.addEventListener("DOMContentLoaded", () => {
     guardados = guardados.filter(i => !(i.tipo === tipo && i.x === x && i.y === y));
     localStorage.setItem("iconosMapa", JSON.stringify(guardados));
   }
+
+  // Borrar todos los iconos con confirmación
+  botonBorrarTodos.addEventListener("click", () => {
+    const confirmacion = confirm("⚠️ Esto eliminará TODOS los iconos del mapa. ¿Estás seguro?");
+    if (confirmacion) {
+      localStorage.removeItem("iconosMapa");
+      document.querySelectorAll(".icono-mapa").forEach(icono => icono.remove());
+    }
+  });
 });
