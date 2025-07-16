@@ -3,66 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <title>Submapa de Nación - Panterra</title>
-  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="../assets/styles.css" />
   <style>
-    #mapa-nacion {
-      position: relative;
-      width: 100%;
-      max-width: 1000px;
-      margin: auto;
-      border: 2px solid #555;
-      background-color: #f2f2f2;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f4f4;
     }
-
-    #mapa-nacion img {
-      width: 100%;
-      display: block;
+    h1 {
+      text-align: center;
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      margin: 0;
     }
-
-    .icono-mapa {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      cursor: grab;
-      user-select: none;
-      z-index: 5;
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
-    }
-
-    #barra-submapa-iconos {
-      margin: 10px auto;
-      width: fit-content;
+    #barra-iconos {
+      background: #222;
+      padding: 10px;
       display: flex;
       gap: 10px;
-      padding: 10px;
-      background: #222;
-      border-radius: 6px;
+      justify-content: center;
     }
-
-    #barra-submapa-iconos img {
+    #barra-iconos img.icono-draggable {
       width: 32px;
       height: 32px;
       cursor: grab;
+    }
+    #botones-control {
+      margin: 10px;
+      text-align: center;
+    }
+    #borrar-todos {
+      background: crimson;
+      color: white;
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #map-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: #eef0f3;
+      overflow: hidden;
+      border-top: 2px solid #ccc;
+    }
+    #map-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .icono-mapa {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+      z-index: 5;
     }
   </style>
 </head>
 <body>
-
-  <h2 style="text-align:center;">Submapa detallado de la nación</h2>
+  <h1>Submapa de Nación</h1>
 
   <!-- Barra de iconos -->
-  <div id="barra-submapa-iconos">
-    <img src="/assets/iconos/pueblo.svg" class="icono-mapa" draggable="true" data-icono="pueblo" alt="Pueblo" />
-    <img src="/assets/iconos/ciudad.svg" class="icono-mapa" draggable="true" data-icono="ciudad" alt="Ciudad" />
-    <img src="/assets/iconos/mazmorra.svg" class="icono-mapa" draggable="true" data-icono="mazmorra" alt="Mazmorra" />
-    <img src="/assets/iconos/entrada_underdark.svg" class="icono-mapa" draggable="true" data-icono="entrada_underdark" alt="Entrada Infraoscuridad" />
+  <div id="barra-iconos">
+    <img src="../assets/iconos/pueblo.svg" class="icono-draggable" draggable="true" data-icono="pueblo" alt="Pueblo" />
+    <img src="../assets/iconos/ciudad.svg" class="icono-draggable" draggable="true" data-icono="ciudad" alt="Ciudad" />
+    <img src="../assets/iconos/mazmorra.svg" class="icono-draggable" draggable="true" data-icono="mazmorra" alt="Mazmorra" />
+    <img src="../assets/iconos/entrada_underdark.svg" class="icono-draggable" draggable="true" data-icono="entrada_underdark" alt="Entrada Infraoscuridad" />
   </div>
 
-  <!-- Mapa base de la nación -->
-  <div id="mapa-nacion">
-    <img src="/assets/mapa_nacion_base.JPG" alt="Mapa de Nación" id="imagen-nacion" />
+  <!-- Botón borrar todos -->
+  <div id="botones-control">
+    <button id="borrar-todos">🗑️ Borrar todos los iconos</button>
   </div>
 
-  <script src="/js/submapaDrag.js"></script>
+  <!-- Mapa de la nación -->
+  <div id="map-container">
+    <img src="../assets/mapa_nacion_base.JPG" alt="Mapa de la nación" />
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/iconosMapa.js"></script>
 </body>
 </html>
