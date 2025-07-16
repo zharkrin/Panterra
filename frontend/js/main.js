@@ -13,3 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // Aquí se insertará el cargador real
   });
 });
+// Simulación de selección de nación para redirigir al submapa correspondiente
+// Este código debería integrarse con el mapa real más adelante
+document.addEventListener("DOMContentLoaded", () => {
+  const mapa = document.getElementById("map-container");
+
+  mapa.addEventListener("click", (e) => {
+    // Por ahora simplemente redirigimos a nación 1
+    // Luego lo conectaremos con IDs reales del mapa
+    window.location.href = "/naciones/1";
+  });
+});
