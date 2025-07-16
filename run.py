@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, abort
 import os
 
 app = Flask(__name__, static_folder='frontend/assets', template_folder='frontend')
@@ -15,13 +15,13 @@ def send_js(path):
 def send_assets(path):
     return send_from_directory('frontend/assets', path)
 
-@app.route('/naciones/<id>')
-def submapa_nacion(id):
-    ruta_archivo = f'frontend/naciones/{id}.html'
-    if os.path.exists(ruta_archivo):
-        return render_template(f'naciones/{id}.html')
+@app.route('/nacion/<int:id_nacion>')
+def mostrar_nacion(id_nacion):
+    ruta = f'frontend/naciones/{id_nacion}.html'
+    if os.path.exists(ruta):
+        return render_template(f'naciones/{id_nacion}.html')
     else:
-        return render_template('naciones/base.html')
+        return render_template('naciones/base.html', id_nacion=id_nacion)
 
 if __name__ == '__main__':
     app.run(debug=True)
