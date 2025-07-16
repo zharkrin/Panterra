@@ -1,46 +1,60 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const mapa = document.getElementById("mapa-nacion");
-
-  // Detectar ID de nación desde la URL (ej: /naciones/5.html → id = 5)
-  const urlPartes = window.location.pathname.split("/");
-  const archivo = urlPartes[urlPartes.length - 1];
-  const nacionID = archivo.split(".")[0] || "base"; // base si no hay número
-
-  const keyLocalStorage = `iconosEnMapa_nacion_${nacionID}`;
-
-  const posicionesGuardadas = JSON.parse(localStorage.getItem(keyLocalStorage)) || [];
-  posicionesGuardadas.forEach(({ tipo, x, y }) => {
-    colocarIcono(tipo, x, y);
-  });
-
+  const mapContainer = document.getElementById("map-container");
   const iconos = document.querySelectorAll(".icono-draggable");
+
+  // Cargar iconos guardados (localStorage)
+  const guardados = JSON.parse(localStorage.getItem("iconosMapa")) || [];
+  guardados.forEach(icono => crearIcono(icono.tipo, icono.x, icono.y));
+
   iconos.forEach(icono => {
     icono.addEventListener("dragstart", e => {
       e.dataTransfer.setData("icono", icono.dataset.icono);
     });
   });
 
-  mapa.addEventListener("dragover", e => e.preventDefault());
-  mapa.addEventListener("drop", e => {
+  mapContainer.addEventListener("dragover", e => {
+    e.preventDefault();
+  });
+
+  mapContainer.addEventListener("drop", e => {
     e.preventDefault();
     const tipo = e.dataTransfer.getData("icono");
     const x = e.offsetX;
     const y = e.offsetY;
-    colocarIcono(tipo, x, y);
+    crearIcono(tipo, x, y);
     guardarIcono(tipo, x, y);
   });
 
-  function colocarIcono(tipo, x, y) {
-    const nuevo = document.createElement("img");
-    nuevo.src = `../assets/iconos/${tipo}.svg`;
-    nuevo.className = "icono-mapa";
-    nuevo.style.left = x + "px";
-    nuevo.style.top = y + "px";
-    mapa.appendChild(nuevo);
+  function crearIcono(tipo, x, y) {
+    const img = document.createElement("img");
+    img.src = `assets/iconos/${tipo}.svg`;
+    img.className = "icono-mapa";
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
+    img.dataset.tipo = tipo;
+
+    // Confirmación antes de borrar
+    img.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      const confirmacion = confirm("¿Estás seguro de que deseas eliminar este icono?");
+      if (confirmacion) {
+        img.remove();
+        eliminarIcono(tipo, x, y);
+      }
+    });
+
+    mapContainer.appendChild(img);
   }
 
   function guardarIcono(tipo, x, y) {
-    posicionesGuardadas.push({ tipo, x, y });
-    localStorage.setItem(keyLocalStorage, JSON.stringify(posicionesGuardadas));
+    const guardados = JSON.parse(localStorage.getItem("iconosMapa")) || [];
+    guardados.push({ tipo, x, y });
+    localStorage.setItem("iconosMapa", JSON.stringify(guardados));
+  }
+
+  function eliminarIcono(tipo, x, y) {
+    let guardados = JSON.parse(localStorage.getItem("iconosMapa")) || [];
+    guardados = guardados.filter(i => !(i.tipo === tipo && i.x === x && i.y === y));
+    localStorage.setItem("iconosMapa", JSON.stringify(guardados));
   }
 });
