@@ -2,25 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Submapa de Nación</title>
+  <title>Submapa de Nación - Panterra</title>
   <link rel="stylesheet" href="/assets/styles.css" />
   <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-    }
-
     #mapa-nacion {
       position: relative;
       width: 100%;
-      height: 100vh;
-      background-color: #222;
-      overflow: hidden;
+      max-width: 1000px;
+      margin: auto;
+      border: 2px solid #555;
+      background-color: #f2f2f2;
     }
 
     #mapa-nacion img {
       width: 100%;
-      height: auto;
       display: block;
     }
 
@@ -28,21 +23,46 @@
       position: absolute;
       width: 32px;
       height: 32px;
-      cursor: pointer;
+      cursor: grab;
       user-select: none;
-      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+      z-index: 5;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
+    }
+
+    #barra-submapa-iconos {
+      margin: 10px auto;
+      width: fit-content;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: #222;
+      border-radius: 6px;
+    }
+
+    #barra-submapa-iconos img {
+      width: 32px;
+      height: 32px;
+      cursor: grab;
     }
   </style>
 </head>
 <body>
-  <div id="mapa-nacion">
-    <img src="/assets/mapa_nacion_base.JPG" alt="Submapa de Nación" id="imagen-nacion" />
 
-    <!-- Marcadores visuales solo de ejemplo -->
-    <img src="/assets/iconos/ciudad.svg" class="icono-mapa" style="top: 40%; left: 55%;" title="Ciudad" />
-    <img src="/assets/iconos/pueblo.svg" class="icono-mapa" style="top: 60%; left: 30%;" title="Pueblo" />
-    <img src="/assets/iconos/entrada_underdark.svg" class="icono-mapa" style="top: 70%; left: 80%;" title="Entrada a Infraoscuridad" />
-    <img src="/assets/iconos/mazmorra.svg" class="icono-mapa" style="top: 25%; left: 40%;" title="Mazmorra" />
+  <h2 style="text-align:center;">Submapa detallado de la nación</h2>
+
+  <!-- Barra de iconos -->
+  <div id="barra-submapa-iconos">
+    <img src="/assets/iconos/pueblo.svg" class="icono-mapa" draggable="true" data-icono="pueblo" alt="Pueblo" />
+    <img src="/assets/iconos/ciudad.svg" class="icono-mapa" draggable="true" data-icono="ciudad" alt="Ciudad" />
+    <img src="/assets/iconos/mazmorra.svg" class="icono-mapa" draggable="true" data-icono="mazmorra" alt="Mazmorra" />
+    <img src="/assets/iconos/entrada_underdark.svg" class="icono-mapa" draggable="true" data-icono="entrada_underdark" alt="Entrada Infraoscuridad" />
   </div>
+
+  <!-- Mapa base de la nación -->
+  <div id="mapa-nacion">
+    <img src="/assets/mapa_nacion_base.JPG" alt="Mapa de Nación" id="imagen-nacion" />
+  </div>
+
+  <script src="/js/submapaDrag.js"></script>
 </body>
 </html>
