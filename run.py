@@ -6,6 +6,10 @@ app = Flask(__name__, static_folder='frontend/assets', template_folder='frontend
 @app.route('/')
 def index():
     return render_template('index.html')
+    
+    @app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/js/<path:path>')
 def send_js(path):
