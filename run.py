@@ -1,31 +1,32 @@
-from flask import Flask, render_template, send_from_directory, abort
 import os
+from flask import Flask, render_template, send_from_directory
 
-app = Flask(__name__, static_folder='frontend/assets', template_folder='frontend')
+app = Flask(
+    __name__,
+    template_folder="frontend/naciones",     # Plantillas HTML por nación
+    static_folder="frontend/assets"          # Archivos estáticos (imágenes, CSS, JS)
+)
 
-@app.route('/')
+# Ruta principal: carga el index general
+@app.route("/")
 def index():
-    return render_template('index.html')
-    
-    @app.route('/')
-def index():
-    return render_template('index.html')
+    return send_from_directory("frontend", "index.html")
 
-@app.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('frontend/js', path)
+# Ruta para cargar el submapa de una nación por su ID
+@app.route("/nacion/<int:id>")
+def mostrar_nacion(id):
+    nombre_archivo = f"{id}.html"
+    ruta_archivo = os.path.join(app.template_folder, nombre_archivo)
 
-@app.route('/assets/<path:path>')
-def send_assets(path):
-    return send_from_directory('frontend/assets', path)
-
-@app.route('/nacion/<int:id_nacion>')
-def mostrar_nacion(id_nacion):
-    ruta = f'frontend/naciones/{id_nacion}.html'
-    if os.path.exists(ruta):
-        return render_template(f'naciones/{id_nacion}.html')
+    if os.path.exists(ruta_archivo):
+        return render_template(nombre_archivo)
     else:
-        return render_template('naciones/base.html', id_nacion=id_nacion)
+        return render_template("base.html", id=id)
 
-if __name__ == '__main__':
+# Servir otros archivos estáticos desde la carpeta 'frontend'
+@app.route('/<path:filename>')
+def serve_frontend(filename):
+    return send_from_directory("frontend", filename)
+
+if __name__ == "__main__":
     app.run(debug=True)
