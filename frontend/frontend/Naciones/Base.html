@@ -7,82 +7,91 @@
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background-color: #111;
-      color: #fff;
-    }
-    .mapa-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
       overflow: hidden;
+      font-family: sans-serif;
     }
-    .mapa-fondo {
+    #contenedor-mapa {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000;
+    }
+    #mapa {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      display: block;
+      object-fit: cover;
     }
     .icono-draggable {
       width: 48px;
       height: 48px;
       position: absolute;
       cursor: grab;
+      user-select: none;
     }
-    .contenedor-iconos {
-      position: fixed;
+    #menu-iconos {
+      position: absolute;
       top: 10px;
       left: 10px;
-      z-index: 1000;
-      background-color: rgba(0, 0, 0, 0.7);
+      background: rgba(255, 255, 255, 0.8);
       padding: 10px;
-      border-radius: 8px;
+      border-radius: 5px;
+      z-index: 1000;
     }
-    .contenedor-iconos img {
+    #menu-iconos img {
+      width: 32px;
+      height: 32px;
       margin: 5px;
+      cursor: grab;
     }
   </style>
 </head>
 <body>
-  <div class="contenedor-iconos">
-    <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
-    <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
-    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto defensivo" />
-    <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
-    <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
-    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada a la Infraoscuridad" />
-  </div>
+  <div id="contenedor-mapa">
+    <img id="mapa" src="../assets/mapa_nacion_base.JPG" alt="Mapa de nación" />
 
-  <div class="mapa-container" id="mapaContainer">
-    <img src="../assets/mapa_nacion_base.JPG" alt="Mapa base de nación" class="mapa-fondo" />
+    <div id="menu-iconos">
+      <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
+      <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
+      <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
+      <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada a la Infraoscuridad" />
+      <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto defensivo" />
+      <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
+    </div>
   </div>
 
   <script>
-    const container = document.getElementById("mapaContainer");
+    const contenedorMapa = document.getElementById('contenedor-mapa');
 
-    document.querySelectorAll(".icono-draggable").forEach(icono => {
-      icono.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("icono", icono.getAttribute("data-icono"));
+    document.querySelectorAll('.icono-draggable').forEach(icono => {
+      icono.addEventListener('dragstart', (e) => {
+        const tipo = e.target.dataset.icono;
+        e.dataTransfer.setData('icono', tipo);
       });
     });
 
-    container.addEventListener("dragover", e => {
+    contenedorMapa.addEventListener('dragover', (e) => {
       e.preventDefault();
     });
 
-    container.addEventListener("drop", e => {
+    contenedorMapa.addEventListener('drop', (e) => {
       e.preventDefault();
-      const tipoIcono = e.dataTransfer.getData("icono");
-      if (!tipoIcono) return;
+      const tipo = e.dataTransfer.getData('icono');
+      if (!tipo) return;
 
-      const nuevoIcono = document.createElement("img");
-      nuevoIcono.src = `../assets/iconos/${tipoIcono}.svg`;
-      nuevoIcono.classList.add("icono-draggable");
-      nuevoIcono.style.left = `${e.offsetX - 24}px`;
-      nuevoIcono.style.top = `${e.offsetY - 24}px`;
-      nuevoIcono.setAttribute("draggable", "true");
-      nuevoIcono.setAttribute("data-icono", tipoIcono);
-      container.appendChild(nuevoIcono);
+      const nuevoIcono = document.createElement('img');
+      nuevoIcono.src = `../assets/iconos/${tipo}.svg`;
+      nuevoIcono.className = 'icono-draggable';
+      nuevoIcono.style.left = `${e.clientX}px`;
+      nuevoIcono.style.top = `${e.clientY}px`;
+      nuevoIcono.setAttribute('draggable', 'true');
+      nuevoIcono.setAttribute('data-icono', tipo);
+      contenedorMapa.appendChild(nuevoIcono);
+
+      nuevoIcono.addEventListener('dragstart', (e) => {
+        const tipo = e.target.dataset.icono;
+        e.dataTransfer.setData('icono', tipo);
+        nuevoIcono.remove(); // lo elimina del mapa al moverlo
+      });
     });
   </script>
 </body>
