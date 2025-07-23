@@ -2,94 +2,88 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Submapa de Nación - Panterra</title>
-  <link rel="stylesheet" href="../assets/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submapa de Nación</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-      background: #333;
+      font-family: sans-serif;
+      background-color: #111;
       color: #fff;
-      padding: 10px;
-      margin: 0;
     }
-    #barra-iconos {
-      background: #222;
-      padding: 10px;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
-    #barra-iconos img.icono-draggable {
-      width: 32px;
-      height: 32px;
-      cursor: grab;
-    }
-    #botones-control {
-      margin: 10px;
-      text-align: center;
-    }
-    #borrar-todos {
-      background: crimson;
-      color: white;
-      padding: 6px 12px;
-      font-size: 14px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #map-container {
+    .mapa-container {
       position: relative;
       width: 100%;
-      height: 600px;
-      background: #eef0f3;
+      height: 100vh;
       overflow: hidden;
-      border-top: 2px solid #ccc;
     }
-    #map-container img {
+    .mapa-fondo {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      pointer-events: none;
+      object-fit: contain;
+      display: block;
     }
-    .icono-mapa {
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      user-select: none;
+    .icono-draggable {
+      width: 48px;
+      height: 48px;
       position: absolute;
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
-      z-index: 5;
+      cursor: grab;
+    }
+    .contenedor-iconos {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .contenedor-iconos img {
+      margin: 5px;
     }
   </style>
 </head>
 <body>
-<h1>Submapa de Nación {{ nacion_id }}</h1>
-
-  <!-- Barra de iconos -->
-  <div id="barra-iconos">
-    <img src="../assets/iconos/pueblo.svg" class="icono-draggable" draggable="true" data-icono="pueblo" alt="Pueblo" />
-    <img src="../assets/iconos/ciudad.svg" class="icono-draggable" draggable="true" data-icono="ciudad" alt="Ciudad" />
-    <img src="../assets/iconos/mazmorra.svg" class="icono-draggable" draggable="true" data-icono="mazmorra" alt="Mazmorra" />
-    <img src="../assets/iconos/entrada_underdark.svg" class="icono-draggable" draggable="true" data-icono="entrada_underdark" alt="Entrada Infraoscuridad" />
+  <div class="contenedor-iconos">
+    <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
+    <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
+    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto defensivo" />
+    <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
+    <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
+    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada a la Infraoscuridad" />
   </div>
 
-  <!-- Botón borrar todos -->
-  <div id="botones-control">
-    <button id="borrar-todos">🗑️ Borrar todos los iconos</button>
+  <div class="mapa-container" id="mapaContainer">
+    <img src="../assets/mapa_nacion_base.JPG" alt="Mapa base de nación" class="mapa-fondo" />
   </div>
 
-  <!-- Mapa de la nación -->
-  <div id="map-container">
-    <img src="../assets/mapa_nacion_base.JPG" alt="Mapa de la nación" />
-  </div>
+  <script>
+    const container = document.getElementById("mapaContainer");
 
-  <!-- Scripts -->
-  <script src="../js/iconosMapa.js"></script>
-  <script src="/js/marcadoresNacion.js"></script>
+    document.querySelectorAll(".icono-draggable").forEach(icono => {
+      icono.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("icono", icono.getAttribute("data-icono"));
+      });
+    });
+
+    container.addEventListener("dragover", e => {
+      e.preventDefault();
+    });
+
+    container.addEventListener("drop", e => {
+      e.preventDefault();
+      const tipoIcono = e.dataTransfer.getData("icono");
+      if (!tipoIcono) return;
+
+      const nuevoIcono = document.createElement("img");
+      nuevoIcono.src = `../assets/iconos/${tipoIcono}.svg`;
+      nuevoIcono.classList.add("icono-draggable");
+      nuevoIcono.style.left = `${e.offsetX - 24}px`;
+      nuevoIcono.style.top = `${e.offsetY - 24}px`;
+      nuevoIcono.setAttribute("draggable", "true");
+      nuevoIcono.setAttribute("data-icono", tipoIcono);
+      container.appendChild(nuevoIcono);
+    });
+  </script>
 </body>
 </html>
