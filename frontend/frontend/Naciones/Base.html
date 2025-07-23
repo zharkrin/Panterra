@@ -201,5 +201,15 @@
     // Cargar iconos guardados automáticamente
     window.onload = cargarDesdeLocalStorage;
   </script>
+  function borrarMapa() {
+  if (!confirm("¿Seguro que quieres borrar todos los iconos del mapa?")) return;
+
+  const contenedor = document.getElementById("mapa-container");
+  const iconos = contenedor.querySelectorAll(".icono-draggable");
+
+  iconos.forEach(icono => contenedor.removeChild(icono));
+
+  localStorage.removeItem("iconosMapa");
+}
 </body>
 </html>
