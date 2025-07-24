@@ -1,100 +1,65 @@
+// iconosMapa.js
+// Maneja el arrastre y colocación de iconos en el mapa
+
 document.addEventListener("DOMContentLoaded", () => {
-  const contenedorMapa = document.getElementById("map-container");
-  const iconosDraggables = document.querySelectorAll(".icono-draggable");
+  const contenedor = document.getElementById("mapa-container");
+  const iconos = document.querySelectorAll(".icono-draggable");
 
-  // Obtener el nombre del archivo HTML para identificar la nación (base.html o 1.html, 2.html, etc.)
-  const path = window.location.pathname;
-  const nombreArchivo = path.substring(path.lastIndexOf("/") + 1);
-  const idNacion = nombreArchivo.replace(".html", ""); // ej: 'base', '1', '23'
-  const storageKey = `marcadores_nacion_${idNacion}`;
-
-  // Función para guardar marcadores
-  function guardarMarcadores() {
-    const marcadores = Array.from(contenedorMapa.querySelectorAll(".icono-mapa")).map(icono => ({
-      tipo: icono.dataset.icono,
-      left: icono.style.left,
-      top: icono.style.top
-    }));
-    localStorage.setItem(storageKey, JSON.stringify(marcadores));
-  }
-
-  // Cargar marcadores desde localStorage
-  function cargarMarcadores() {
-    const datos = localStorage.getItem(storageKey);
-    if (datos) {
-      const marcadores = JSON.parse(datos);
-      marcadores.forEach(marcador => {
-        const nuevoIcono = document.createElement("img");
-        nuevoIcono.src = `assets/iconos/${marcador.tipo}.svg`;
-        nuevoIcono.className = "icono-mapa";
-        nuevoIcono.style.left = marcador.left;
-        nuevoIcono.style.top = marcador.top;
-        nuevoIcono.dataset.icono = marcador.tipo;
-
-        hacerArrastrable(nuevoIcono);
-        contenedorMapa.appendChild(nuevoIcono);
-      });
-    }
-  }
-
-  // Hace que un icono se pueda arrastrar dentro del mapa
-  function hacerArrastrable(icono) {
-    icono.addEventListener("mousedown", e => {
-      e.preventDefault();
-      let offsetX = e.offsetX;
-      let offsetY = e.offsetY;
-
-      function mover(eMove) {
-        icono.style.left = (eMove.clientX - offsetX - contenedorMapa.getBoundingClientRect().left) + "px";
-        icono.style.top = (eMove.clientY - offsetY - contenedorMapa.getBoundingClientRect().top) + "px";
-      }
-
-      function soltar() {
-        document.removeEventListener("mousemove", mover);
-        document.removeEventListener("mouseup", soltar);
-        guardarMarcadores();
-      }
-
-      document.addEventListener("mousemove", mover);
-      document.addEventListener("mouseup", soltar);
-    });
-
-    icono.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      const confirmar = confirm("¿Eliminar este marcador?");
-      if (confirmar) {
-        icono.remove();
-        guardarMarcadores();
-      }
-    });
-  }
-
-  // Evento de arrastrar desde la barra de iconos
-  iconosDraggables.forEach(icono => {
+  // Evento de arrastre desde la barra de iconos
+  iconos.forEach(icono => {
     icono.addEventListener("dragstart", e => {
       e.dataTransfer.setData("icono", icono.dataset.icono);
     });
   });
 
-  // Evento para soltar iconos en el mapa
-  contenedorMapa.addEventListener("dragover", e => {
+  // Permitir soltar iconos sobre el mapa
+  contenedor.addEventListener("dragover", e => {
     e.preventDefault();
   });
 
-  contenedorMapa.addEventListener("drop", e => {
+  contenedor.addEventListener("drop", e => {
     e.preventDefault();
-    const tipo = e.dataTransfer.getData("icono");
-    const nuevoIcono = document.createElement("img");
-    nuevoIcono.src = `assets/iconos/${tipo}.svg`;
-    nuevoIcono.className = "icono-mapa";
-    nuevoIcono.style.left = (e.clientX - contenedorMapa.getBoundingClientRect().left) + "px";
-    nuevoIcono.style.top = (e.clientY - contenedorMapa.getBoundingClientRect().top) + "px";
-    nuevoIcono.dataset.icono = tipo;
+    const tipoIcono = e.dataTransfer.getData("icono");
+    if (!tipoIcono) return;
 
-    hacerArrastrable(nuevoIcono);
-    contenedorMapa.appendChild(nuevoIcono);
-    guardarMarcadores();
+    const img = document.createElement("img");
+    img.src = `assets/iconos/${tipoIcono}.svg`;
+    img.classList.add("icono-mapa");
+    img.dataset.icono = tipoIcono;
+
+    // Posición del icono en el mapa
+    const rect = contenedor.getBoundingClientRect();
+    img.style.left = `${e.clientX - rect.left - 16}px`;
+    img.style.top = `${e.clientY - rect.top - 16}px`;
+
+    contenedor.appendChild(img);
+    hacerArrastrable(img);
+
+    guardarMapa(); // Guardar automáticamente después de añadir un icono
   });
-
-  cargarMarcadores();
 });
+
+// Hacer que un icono ya en el mapa sea arrastrable
+function hacerArrastrable(element) {
+  let offsetX, offsetY;
+
+  element.addEventListener("mousedown", e => {
+    e.preventDefault();
+    offsetX = e.clientX - element.offsetLeft;
+    offsetY = e.clientY - element.offsetTop;
+
+    const mover = eMove => {
+      element.style.left = `${eMove.clientX - offsetX}px`;
+      element.style.top = `${eMove.clientY - offsetY}px`;
+    };
+
+    const soltar = () => {
+      document.removeEventListener("mousemove", mover);
+      document.removeEventListener("mouseup", soltar);
+      guardarMapa(); // Guardar posiciones al soltar
+    };
+
+    document.addEventListener("mousemove", mover);
+    document.addEventListener("mouseup", soltar);
+  });
+}
