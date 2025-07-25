@@ -5,6 +5,17 @@
   <title>Mapa de Nación - Panterra</title>
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
+    /* Contenedor del mapa */
+    #mapa-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: url('../assets/mapa_nacion_base.JPG') no-repeat center/cover;
+      border: 2px solid #444;
+      overflow: hidden;
+    }
+
+    /* Barra de iconos */
     #barra-iconos {
       background: #222;
       padding: 10px;
@@ -18,33 +29,29 @@
       height: 32px;
       cursor: grab;
     }
-    #map-container {
-      position: relative;
-      width: 100%;
-      height: 600px;
-      background: url("../assets/mapa_nacion_base.JPG") center/cover no-repeat;
-      overflow: hidden;
-      border: 2px solid #333;
-    }
+
+    /* Iconos en el mapa */
     .icono-mapa {
       width: 32px;
       height: 32px;
       position: absolute;
-      cursor: grab;
+      cursor: pointer;
       user-select: none;
-      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.4));
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
     }
+
+    /* Botonera */
     #mapa-actions {
       margin-top: 10px;
+      display: flex;
+      gap: 10px;
     }
     #mapa-actions button {
-      margin-right: 10px;
-      padding: 6px 12px;
-      cursor: pointer;
+      padding: 5px 10px;
       border: none;
       background: #444;
-      color: #fff;
-      border-radius: 4px;
+      color: white;
+      cursor: pointer;
     }
     #mapa-actions button:hover {
       background: #666;
@@ -58,23 +65,22 @@
   <div id="barra-iconos">
     <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
     <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
-    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto defensivo" />
+    <img src="../assets/iconos/PuestoDefensivo.svg" class="icono-draggable" draggable="true" data-icono="PuestoDefensivo" alt="Puesto Defensivo" />
     <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
-    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
     <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
+    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
   </div>
 
   <!-- Contenedor del mapa -->
-  <div id="map-container" data-nacion-id="1">
-    <!-- Los iconos se cargarán aquí dinámicamente -->
-  </div>
+  <div id="mapa-container"></div>
 
-  <!-- Botones de acción -->
+  <!-- Botonera -->
   <div id="mapa-actions">
     <button onclick="guardarMapa()">Guardar mapa</button>
     <button onclick="borrarMapa()">Borrar mapa</button>
   </div>
 
-  <script src="../js/localStorageMapa.js"></script>
+  <!-- Scripts -->
+  <script src="../js/iconosMapa.js"></script>
 </body>
 </html>
