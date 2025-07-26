@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Submapa de Nación 2</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <meta charset="UTF-8" />
+  <title>Nación 2 - Panterra</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
   <style>
+    /* Ajustes del mapa de la Nación 1 */
+    #map-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: url("../assets/mapa_nacion_base.JPG") center/cover no-repeat;
+      border: 2px solid #333;
+      overflow: hidden;
+    }
+    .icono-mapa {
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      cursor: grab;
+      user-select: none;
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.4));
+    }
     #barra-iconos {
       background: #222;
       padding: 10px;
@@ -18,28 +35,20 @@
       height: 32px;
       cursor: grab;
     }
-    #mapa-container {
-      position: relative;
-      width: 100%;
-      height: 600px;
-      background: url("../assets/mapa_nacion_base.JPG") center/cover no-repeat;
-      overflow: hidden;
-    }
-    .icono-mapa {
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      user-select: none;
-      position: absolute;
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.4));
-    }
     #mapa-actions {
       margin: 10px 0;
+      display: flex;
+      gap: 10px;
+    }
+    #mapa-actions button {
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Submapa de Nación 2</h1>
+  <h1>Mapa de la Nación 1</h1>
 
   <!-- Barra de iconos -->
   <div id="barra-iconos">
@@ -47,11 +56,14 @@
     <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
     <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
     <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
-    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto Defensivo" />
+    <img src="../assets/iconos/Puesto defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto defensivo" alt="Puesto defensivo" />
     <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
   </div>
 
-  <!-- Botones -->
+  <!-- Contenedor del mapa -->
+  <div id="map-container"></div>
+
+  <!-- Acciones del mapa -->
   <div id="mapa-actions">
     <button onclick="guardarMapa()">Guardar mapa</button>
     <input type="file" id="cargarMapaInput" accept=".json" onchange="cargarMapa()" style="display: none;">
@@ -59,67 +71,6 @@
     <button onclick="borrarMapa()">Borrar mapa</button>
   </div>
 
-  <!-- Contenedor del mapa -->
-  <div id="mapa-container"></div>
-
-  <script>
-    const contenedor = document.getElementById("mapa-container");
-    const iconos = document.querySelectorAll(".icono-draggable");
-
-    iconos.forEach(icono => {
-      icono.addEventListener("dragstart", e => {
-        e.dataTransfer.setData("icono", icono.getAttribute("data-icono"));
-      });
-    });
-
-    contenedor.addEventListener("dragover", e => e.preventDefault());
-    contenedor.addEventListener("drop", e => {
-      e.preventDefault();
-      const tipo = e.dataTransfer.getData("icono");
-      colocarIcono(tipo, e.offsetX, e.offsetY);
-    });
-
-    function colocarIcono(tipo, x, y) {
-      const img = document.createElement("img");
-      img.src = `../assets/iconos/${tipo}.svg`;
-      img.classList.add("icono-mapa");
-      img.style.left = `${x}px`;
-      img.style.top = `${y}px`;
-
-      img.addEventListener("click", () => {
-        if (confirm("¿Eliminar este icono?")) {
-          contenedor.removeChild(img);
-          guardarMapa();
-        }
-      });
-
-      contenedor.appendChild(img);
-      guardarMapa();
-    }
-
-    function guardarMapa() {
-      const iconos = [...contenedor.querySelectorAll(".icono-mapa")].map(icono => ({
-        tipo: icono.src.split("/").pop().replace(".svg", ""),
-        x: icono.style.left,
-        y: icono.style.top
-      }));
-      localStorage.setItem("iconosMapa_2", JSON.stringify(iconos));
-    }
-
-    function cargarMapa() {
-      const data = localStorage.getItem("iconosMapa_2");
-      if (data) {
-        JSON.parse(data).forEach(icono => colocarIcono(icono.tipo, parseInt(icono.x), parseInt(icono.y)));
-      }
-    }
-
-    function borrarMapa() {
-      if (!confirm("¿Seguro que quieres borrar todos los iconos del mapa?")) return;
-      contenedor.innerHTML = "";
-      localStorage.removeItem("iconosMapa_2");
-    }
-
-    cargarMapa();
-  </script>
+  <script src="../js/iconosMapa.js"></script>
 </body>
 </html>
