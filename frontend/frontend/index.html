@@ -1,22 +1,123 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Panterra - Generador de Mapas Fantásticos</title>
+  <title>Panterra - Mapa Principal</title>
   <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    /* Contenedor principal del mapa */
+    #map-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: #eef0f3;
+      border: 2px solid #444;
+      overflow: hidden;
+    }
+
+    /* Barra de iconos */
+    #barra-iconos {
+      background: #222;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      position: relative;
+      z-index: 10;
+    }
+    #barra-iconos img.icono-draggable {
+      width: 32px;
+      height: 32px;
+      cursor: grab;
+    }
+
+    /* Iconos en el mapa */
+    .icono-mapa {
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+    }
+
+    /* Botonera */
+    #map-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    #map-actions button {
+      padding: 5px 10px;
+      border: none;
+      background: #444;
+      color: white;
+      cursor: pointer;
+    }
+    #map-actions button:hover {
+      background: #666;
+    }
+
+    /* Enlaces de naciones */
+    #naciones-lista {
+      margin-top: 20px;
+      background: #ddd;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    #naciones-lista a {
+      display: inline-block;
+      margin: 5px;
+      padding: 5px 10px;
+      background: #444;
+      color: white;
+      text-decoration: none;
+      border-radius: 3px;
+    }
+    #naciones-lista a:hover {
+      background: #666;
+    }
+  </style>
 </head>
 <body>
-  <h1>Panterra - Generador de Mapas Fantásticos</h1>
+  <h1>Panterra - Mapa Principal</h1>
 
-  <div id="menu-principal">
-    <button id="nuevoMundo">Nuevo Mundo</button>
-    <button id="cargarMundo">Cargar Mundo</button>
+  <!-- Barra de iconos -->
+  <div id="barra-iconos">
+    <img src="assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
+    <img src="assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
+    <img src="assets/iconos/PuestoDefensivo.svg" class="icono-draggable" draggable="true" data-icono="PuestoDefensivo" alt="Puesto Defensivo" />
+    <img src="assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
+    <img src="assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
+    <img src="assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
   </div>
 
-  <div id="mapa">
-    <!-- Aquí se mostrará el mapa -->
+  <!-- Contenedor del mapa principal -->
+  <div id="map-container"></div>
+
+  <!-- Botonera -->
+  <div id="map-actions">
+    <button onclick="guardarMapaPrincipal()">Guardar mapa</button>
+    <button onclick="borrarMapaPrincipal()">Borrar mapa</button>
   </div>
 
-  <script src="js/main.js"></script>
+  <!-- Lista de naciones -->
+  <div id="naciones-lista">
+    <h2>Naciones</h2>
+    <a href="naciones/1.html" target="_blank">Nación 1</a>
+    <a href="naciones/2.html" target="_blank">Nación 2</a>
+    <a href="naciones/3.html" target="_blank">Nación 3</a>
+    <a href="naciones/4.html" target="_blank">Nación 4</a>
+  </div>
+
+  <!-- Script principal -->
+  <script src="js/iconosMapa.js"></script>
+  <script>
+    function guardarMapaPrincipal() {
+      guardarMapa('principal');
+    }
+    function borrarMapaPrincipal() {
+      borrarMapa('principal');
+    }
+  </script>
 </body>
 </html>
