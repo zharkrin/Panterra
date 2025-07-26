@@ -5,17 +5,6 @@
   <title>Mapa de Nación - Panterra</title>
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
-    /* Contenedor del mapa */
-    #mapa-container {
-      position: relative;
-      width: 100%;
-      height: 600px;
-      background: url('../assets/mapa_nacion_base.JPG') no-repeat center/cover;
-      border: 2px solid #444;
-      overflow: hidden;
-    }
-
-    /* Barra de iconos */
     #barra-iconos {
       background: #222;
       padding: 10px;
@@ -25,36 +14,41 @@
       z-index: 10;
     }
     #barra-iconos img.icono-draggable {
-      width: 32px;
-      height: 32px;
+      width: 48px;
+      height: 48px;
       cursor: grab;
     }
-
-    /* Iconos en el mapa */
-    .icono-mapa {
-      width: 32px;
-      height: 32px;
-      position: absolute;
-      cursor: pointer;
-      user-select: none;
-      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
-    }
-
-    /* Botonera */
     #mapa-actions {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
+      margin: 10px 0;
     }
     #mapa-actions button {
       padding: 5px 10px;
+      margin-right: 5px;
+      background: #333;
+      color: #fff;
       border: none;
-      background: #444;
-      color: white;
       cursor: pointer;
+      border-radius: 3px;
     }
     #mapa-actions button:hover {
-      background: #666;
+      background: #555;
+    }
+    #mapa-container {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: url("../assets/mapa_nacion_base.JPG") no-repeat center center;
+      background-size: cover;
+      overflow: hidden;
+      border: 2px solid #333;
+    }
+    .icono-mapa {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
     }
   </style>
 </head>
@@ -65,22 +59,25 @@
   <div id="barra-iconos">
     <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
     <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
-    <img src="../assets/iconos/PuestoDefensivo.svg" class="icono-draggable" draggable="true" data-icono="PuestoDefensivo" alt="Puesto Defensivo" />
+    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto Defensivo" />
     <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
     <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
     <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
   </div>
 
-  <!-- Contenedor del mapa -->
-  <div id="mapa-container"></div>
-
-  <!-- Botonera -->
+  <!-- Botones de acciones -->
   <div id="mapa-actions">
     <button onclick="guardarMapa()">Guardar mapa</button>
+    <input type="file" id="cargarMapaInput" accept=".json" onchange="cargarMapa()" style="display: none;">
+    <button onclick="document.getElementById('cargarMapaInput').click()">Cargar mapa</button>
     <button onclick="borrarMapa()">Borrar mapa</button>
   </div>
 
-  <!-- Scripts -->
+  <!-- Contenedor del mapa -->
+  <div id="mapa-container">
+    <!-- Aquí se colocarán los iconos -->
+  </div>
+
   <script src="../js/iconosMapa.js"></script>
 </body>
 </html>
