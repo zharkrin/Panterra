@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mapa de la Nación 5</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    #mapa-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .icono-draggable {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      cursor: move;
+      user-select: none;
+    }
+
+    #iconos-disponibles {
+      margin-bottom: 10px;
+    }
+
+    #iconos-disponibles img {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    #mapa-actions {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mapa de la Nación 5</h1>
+
+  <div id="iconos-disponibles">
+    <img src="/static/iconos/Ciudad.svg" onclick="agregarIcono('Ciudad')" title="Ciudad">
+    <img src="/static/iconos/Pueblo.svg" onclick="agregarIcono('Pueblo')" title="Pueblo">
+    <img src="/static/iconos/Puesto_defensivo.svg" onclick="agregarIcono('Puesto_defensivo')" title="Puesto defensivo">
+    <img src="/static/iconos/Ruinas.svg" onclick="agregarIcono('Ruinas')" title="Ruinas">
+    <img src="/static/iconos/Entrada_infraoscuridad.svg" onclick="agregarIcono('Entrada_infraoscuridad')" title="Entrada a la Infraoscuridad">
+    <img src="/static/iconos/Mazmorra.svg" onclick="agregarIcono('Mazmorra')" title="Mazmorra">
+  </div>
+
+  <div id="mapa-container">
+    <img src="/static/mapa_nacion_base.JPG" alt="Mapa de la nación" id="mapa-base">
+  </div>
+
+  <div id="mapa-actions">
+    <button onclick="guardarMapa()">Guardar mapa</button>
+    <input type="file" id="cargarMapaInput" accept=".json" onchange="cargarMapa()" style="display: none;">
+    <button onclick="document.getElementById('cargarMapaInput').click()">Cargar mapa</button>
+    <button onclick="borrarMapa()">Borrar mapa</button>
+  </div>
+
+  <script>
+    const contenedor = document.getElementById("mapa-container");
+    const almacenamientoClave = "iconosMapa_nacion_5";
+
+    function agregarIcono(nombre) {
+      const icono = document.createElement("img");
+      icono.src = "/static/iconos/" + nombre + ".svg";
+      icono.className = "icono-draggable";
+      icono.title = nombre;
+      icono.style.left = "0px";
+      icono.style.top = "0px";
+
+      icono.draggable = true;
+      icono.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", null);
+        icono.dataset.dragging = "true";
+        icono.dataset.offsetX = e.offsetX;
+        icono.dataset.offsetY = e.offsetY;
+      });
+
+      icono.addEventListener("dragend", e => {
+        const offsetX = parseInt(icono.dataset.offsetX);
+        const offsetY = parseInt(icono.dataset.offsetY);
+        icono.style.left = (e.pageX - contenedor.offsetLeft - offsetX) + "px";
+        icono.style.top = (e.pageY - contenedor.offsetTop - offsetY) + "px";
+      });
+
+      contenedor.appendChild(icono);
+    }
+
+    contenedor.addEventListener("dragover", e => e.preventDefault());
+
+    function guardarMapa() {
+      const iconos = contenedor.querySelectorAll(".icono-draggable");
+      const datos = [];
+
+      iconos.forEach(icono => {
+        datos.push({
+          nombre: icono.title,
+          left: icono.style.left,
+          top: icono.style.top
+        });
+      });
+
+      localStorage.setItem(almacenamientoClave, JSON.stringify(datos));
+      alert("Mapa guardado correctamente.");
+    }
+
+    function cargarMapa() {
+      const input = document.getElementById("cargarMapaInput");
+      const archivo = input.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function(e) {
+        const datos = JSON.parse(e.target.result);
+        restaurarIconos(datos);
+      };
+      lector.readAsText(archivo);
+    }
+
+    function borrarMapa() {
+      if (!confirm("¿Seguro que quieres borrar todos los iconos del mapa?")) return;
+
+      const iconos = contenedor.querySelectorAll(".icono-draggable");
+      iconos.forEach(icono => contenedor.removeChild(icono));
+      localStorage.removeItem(almacenamientoClave);
+    }
+
+    function restaurarIconos(datos) {
+      const iconosAntiguos = contenedor.querySelectorAll(".icono-draggable");
+      iconosAntiguos.forEach(icono => contenedor.removeChild(icono));
+
+      datos.forEach(dato => {
+        const icono = document.createElement("img");
+        icono.src = "/static/iconos/" + dato.nombre + ".svg";
+        icono.className = "icono-draggable";
+        icono.title = dato.nombre;
+        icono.style.left = dato.left;
+        icono.style.top = dato.top;
+        icono.draggable = true;
+
+        icono.addEventListener("dragstart", e => {
+          e.dataTransfer.setData("text/plain", null);
+          icono.dataset.dragging = "true";
+          icono.dataset.offsetX = e.offsetX;
+          icono.dataset.offsetY = e.offsetY;
+        });
+
+        icono.addEventListener("dragend", e => {
+          const offsetX = parseInt(icono.dataset.offsetX);
+          const offsetY = parseInt(icono.dataset.offsetY);
+          icono.style.left = (e.pageX - contenedor.offsetLeft - offsetX) + "px";
+          icono.style.top = (e.pageY - contenedor.offsetTop - offsetY) + "px";
+        });
+
+        contenedor.appendChild(icono);
+      });
+    }
+
+    // Cargar automáticamente iconos guardados
+    window.onload = function () {
+      const datosGuardados = localStorage.getItem(almacenamientoClave);
+      if (datosGuardados) {
+        const datos = JSON.parse(datosGuardados);
+        restaurarIconos(datos);
+      }
+    };
+  </script>
+</body>
+</html>
