@@ -1,32 +1,47 @@
-from flask import Flask, send_from_directory, render_template_string
+from flask import Flask, send_from_directory, render_template, redirect, url_for, request
 import os
 
-app = Flask(__name__, static_folder="frontend", static_url_path="")
+app = Flask(__name__, static_folder='frontend', template_folder='frontend')
 
-# Ruta para todo lo que está en /frontend directamente
-@app.route("/")
-def home():
-    return send_from_directory("frontend", "index.html")
+@app.route('/')
+def inicio():
+    return redirect('/generador')
 
-# Rutas para las naciones
-@app.route("/naciones/<id>.html")
-def mostrar_nacion(id):
-    ruta_nacion = f"frontend/naciones/{id}.html"
-    
-    if os.path.exists(ruta_nacion):
-        return send_from_directory("frontend/naciones", f"{id}.html")
-    
-    # Cargar base.html como plantilla si no existe el submapa específico
-    with open("frontend/naciones/base.html", encoding="utf-8") as f:
-        contenido_base = f.read()
-    
-    contenido_personalizado = contenido_base.replace("Mapa de la Nación 1", f"Mapa de la Nación {id}")
-    return render_template_string(contenido_personalizado)
+@app.route('/generador')
+def generador():
+    return send_from_directory('frontend/azgaar', 'index.html')
 
-# Rutas para cargar cualquier archivo estático (JS, CSS, imágenes, etc.)
-@app.route("/<path:path>")
-def servir_archivo(path):
-    return send_from_directory("frontend", path)
+@app.route('/nacion/<int:nacion_id>')
+def mostrar_nacion(nacion_id):
+    ruta_archivo = os.path.join(app.template_folder, 'naciones', f'{nacion_id}.html')
+    if os.path.exists(ruta_archivo):
+        return send_from_directory('frontend/naciones', f'{nacion_id}.html')
+    else:
+        # Redirige a base.html con parámetro de nación (ej: base.html?mapa=24)
+        return redirect(url_for('base_nacion', mapa=nacion_id))
 
-if __name__ == "__main__":
+@app.route('/naciones/base.html')
+def base_nacion():
+    mapa = request.args.get('mapa', default='0')
+    return send_from_directory('frontend/naciones', 'base.html')
+
+# Archivos estáticos (estilo, assets, etc.)
+@app.route('/assets/<path:archivo>')
+def assets(archivo):
+    return send_from_directory('frontend/assets', archivo)
+
+@app.route('/styles/<path:archivo>')
+def styles(archivo):
+    return send_from_directory('frontend/styles', archivo)
+
+@app.route('/scripts/<path:archivo>')
+def scripts(archivo):
+    return send_from_directory('frontend/scripts', archivo)
+
+# Archivos para Azgaar
+@app.route('/azgaar/<path:archivo>')
+def azgaar(archivo):
+    return send_from_directory('frontend/azgaar', archivo)
+
+if __name__ == '__main__':
     app.run(debug=True)
