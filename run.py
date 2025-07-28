@@ -1,40 +1,27 @@
-from flask import Flask, render_template, send_from_directory, request, redirect, url_for, Response
+from flask import Flask, send_from_directory, render_template, abort
 import os
 
-app = Flask(__name__, template_folder='frontend', static_folder='frontend')
+app = Flask(__name__, static_folder="frontend", template_folder="frontend")
 
-@app.route('/')
-def inicio():
-    return redirect(url_for('mostrar_generador'))
+@app.route("/")
+def index():
+    return send_from_directory("frontend", "index.html")
 
-@app.route('/generador')
-def mostrar_generador():
-    return render_template('index.html')
-
-@app.route('/nacion/<int:nacion_id>')
-def mostrar_nacion(nacion_id):
-    ruta_archivo = os.path.join(app.template_folder, 'naciones', f'{nacion_id}.html')
-    if os.path.exists(ruta_archivo):
-        return render_template(f'naciones/{nacion_id}.html')
+@app.route("/nacion/<id>")
+def mapa_nacion(id):
+    ruta_nacion = os.path.join("frontend", "naciones", f"{id}.html")
+    if os.path.exists(ruta_nacion):
+        return send_from_directory("frontend/naciones", f"{id}.html")
     else:
-        return render_template('naciones/base.html')
+        return send_from_directory("frontend/naciones", "base.html")
 
-@app.route('/guardar_mapa_html/<int:mapa_id>', methods=['POST'])
-def guardar_mapa_html(mapa_id):
-    html_content = request.data.decode('utf-8')
-    ruta_destino = os.path.join(app.template_folder, 'naciones', f'{mapa_id}.html')
+@app.route("/assets/<path:filename>")
+def assets(filename):
+    return send_from_directory("frontend/assets", filename)
 
-    try:
-        with open(ruta_destino, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        return Response(status=200)
-    except Exception as e:
-        print(f"Error al guardar {mapa_id}.html: {e}")
-        return Response("Error al guardar el archivo.", status=500)
+@app.route("/naciones/<path:filename>")
+def naciones_static(filename):
+    return send_from_directory("frontend/naciones", filename)
 
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory(os.path.join(app.static_folder), filename)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
