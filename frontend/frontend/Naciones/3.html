@@ -5,26 +5,13 @@
   <title>Mapa de la Nación 3</title>
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-    }
-    h1 {
-      background: #222;
-      color: #fff;
-      margin: 0;
-      padding: 15px;
-      text-align: center;
-    }
     #barra-iconos {
-      background: #333;
+      background: #222;
       padding: 10px;
       display: flex;
       gap: 10px;
     }
-    #barra-iconos img {
+    #barra-iconos img.icono-draggable {
       width: 32px;
       height: 32px;
       cursor: grab;
@@ -35,24 +22,17 @@
       height: 600px;
       background: url('../assets/mapa_nacion_base.JPG') no-repeat center center;
       background-size: cover;
-      border: 1px solid #ccc;
+      overflow: hidden;
     }
     .icono-mapa {
       width: 32px;
       height: 32px;
-      position: absolute;
       cursor: pointer;
+      position: absolute;
       user-select: none;
     }
     #mapa-actions {
-      padding: 10px;
-      background: #eee;
-      display: flex;
-      gap: 10px;
-    }
-    #mapa-actions button {
-      padding: 5px 10px;
-      cursor: pointer;
+      margin: 10px;
     }
   </style>
 </head>
@@ -60,12 +40,12 @@
   <h1>Mapa de la Nación 3</h1>
 
   <div id="barra-iconos">
-    <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="ciudad" alt="Ciudad" />
-    <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="pueblo" alt="Pueblo" />
-    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="puesto_defensivo" alt="Puesto Defensivo" />
-    <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="ruinas" alt="Ruinas" />
-    <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="mazmorra" alt="Mazmorra" />
-    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
+    <img src="../assets/iconos/Ciudad.svg" class="icono-draggable" draggable="true" data-icono="Ciudad" alt="Ciudad" />
+    <img src="../assets/iconos/Pueblo.svg" class="icono-draggable" draggable="true" data-icono="Pueblo" alt="Pueblo" />
+    <img src="../assets/iconos/Mazmorra.svg" class="icono-draggable" draggable="true" data-icono="Mazmorra" alt="Mazmorra" />
+    <img src="../assets/iconos/Entrada_infraoscuridad.svg" class="icono-draggable" draggable="true" data-icono="Entrada_infraoscuridad" alt="Entrada Infraoscuridad" />
+    <img src="../assets/iconos/Puesto_defensivo.svg" class="icono-draggable" draggable="true" data-icono="Puesto_defensivo" alt="Puesto Defensivo" />
+    <img src="../assets/iconos/Ruinas.svg" class="icono-draggable" draggable="true" data-icono="Ruinas" alt="Ruinas" />
   </div>
 
   <div id="mapa-actions">
@@ -77,7 +57,94 @@
 
   <div id="mapa-container"></div>
 
-  <script src="../js/iconosMapa.js"></script>
-  <script src="../js/marcadores.js"></script>
+  <script>
+    const MAP_KEY = "iconosMapa_nacion3";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("mapa-container");
+      const iconos = document.querySelectorAll(".icono-draggable");
+
+      iconos.forEach(icono => {
+        icono.addEventListener("dragstart", e => {
+          e.dataTransfer.setData("icono", icono.dataset.icono);
+        });
+      });
+
+      container.addEventListener("dragover", e => e.preventDefault());
+      container.addEventListener("drop", e => {
+        e.preventDefault();
+        const tipo = e.dataTransfer.getData("icono");
+        const x = e.offsetX;
+        const y = e.offsetY;
+        crearIcono(tipo, x, y);
+      });
+
+      const data = localStorage.getItem(MAP_KEY);
+      if (data) {
+        JSON.parse(data).forEach(icono => {
+          crearIcono(icono.tipo, icono.x, icono.y);
+        });
+      }
+    });
+
+    function crearIcono(tipo, x, y) {
+      const img = document.createElement("img");
+      img.src = `../assets/iconos/${tipo}.svg`;
+      img.className = "icono-mapa";
+      img.style.left = x + "px";
+      img.style.top = y + "px";
+      img.draggable = true;
+
+      img.addEventListener("dragend", e => {
+        img.style.left = e.offsetX + "px";
+        img.style.top = e.offsetY + "px";
+      });
+
+      img.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        if (confirm("¿Eliminar este icono?")) {
+          img.remove();
+          guardarMapa();
+        }
+      });
+
+      document.getElementById("mapa-container").appendChild(img);
+      guardarMapa();
+    }
+
+    function guardarMapa() {
+      const container = document.getElementById("mapa-container");
+      const iconos = container.querySelectorAll(".icono-mapa");
+      const data = Array.from(iconos).map(icono => ({
+        tipo: icono.src.split("/").pop().replace(".svg", ""),
+        x: parseInt(icono.style.left),
+        y: parseInt(icono.style.top)
+      }));
+      localStorage.setItem(MAP_KEY, JSON.stringify(data));
+      alert("Mapa guardado.");
+    }
+
+    function cargarMapa() {
+      const file = document.getElementById("cargarMapaInput").files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const data = JSON.parse(e.target.result);
+        const container = document.getElementById("mapa-container");
+        container.innerHTML = "";
+        data.forEach(icono => crearIcono(icono.tipo, icono.x, icono.y));
+        localStorage.setItem(MAP_KEY, JSON.stringify(data));
+      };
+      reader.readAsText(file);
+    }
+
+    function borrarMapa() {
+      if (!confirm("¿Seguro que quieres borrar todos los iconos del mapa?")) return;
+      const container = document.getElementById("mapa-container");
+      container.innerHTML = "";
+      localStorage.removeItem(MAP_KEY);
+    }
+  </script>
 </body>
 </html>
