@@ -1,46 +1,41 @@
 // frontend/frontend/tools/gen_naciones.js
 
-function generarNaciones(numero) {
-  if (!window.pack || !pack.cells || !pack.features) {
-    console.error("Mapa no cargado o no compatible con el sistema de naciones.");
-    return;
-  }
+/**
+ * Script para generar iconos y nombres de naciones en el mapa principal.
+ * Este archivo se debe integrar en el sistema de generación de Panterra.
+ */
 
-  const usedCells = new Set();
-  const naciones = [];
+const NACIONES_PREDEFINIDAS = [
+  { id: 1, nombre: "Arenzhul", color: "#c19a6b" },
+  { id: 2, nombre: "Valtheria", color: "#5e9ca0" },
+  { id: 3, nombre: "Drakmor", color: "#9e1b1b" },
+  { id: 4, nombre: "Elvaron", color: "#3a7d44" },
+  { id: 5, nombre: "Thandur", color: "#5555aa" }
+];
 
-  for (let i = 1; i <= numero; i++) {
-    const cell = pack.cells.i.find(c => !usedCells.has(c) && !pack.cells.h[c]); // celda terrestre y libre
-    if (cell === undefined) continue;
+function generarNacionesEnMapa(mapaSVG) {
+  const mapa = document.getElementById(mapaSVG);
+  if (!mapa) return console.error("Mapa no encontrado:", mapaSVG);
 
-    usedCells.add(cell);
+  NACIONES_PREDEFINIDAS.forEach(nacion => {
+    const elemento = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    elemento.setAttribute("cx", Math.random() * 800); // Posición aleatoria
+    elemento.setAttribute("cy", Math.random() * 600);
+    elemento.setAttribute("r", 12);
+    elemento.setAttribute("fill", nacion.color);
+    elemento.setAttribute("class", "nacion-icono");
+    elemento.setAttribute("data-id", nacion.id);
+    elemento.setAttribute("title", nacion.nombre);
 
-    const nombre = `Nación ${i}`;
-    const capital = pack.cells.p[cell]; // posición
-    const color = d3.color(d3.interpolateRainbow(i / numero)).hex();
-
-    const nuevaNacion = {
-      id: i,
-      nombre,
-      cell,
-      capital,
-      color
-    };
-
-    naciones.push(nuevaNacion);
-
-    // Añadir al pack si lo deseas usar directamente en el mapa
-    if (!pack.states) pack.states = [];
-    pack.states.push({
-      i,
-      name: nombre,
-      capital: cell,
-      color,
-      expansionism: 1,
-      cells: 1
+    elemento.addEventListener("click", () => {
+      window.location.href = `/naciones/${nacion.id}.html`;
     });
-  }
 
-  console.log(`Se han generado ${naciones.length} naciones.`);
-  return naciones;
+    mapa.appendChild(elemento);
+  });
 }
+
+// Autoejecutar si el SVG está presente
+window.addEventListener("DOMContentLoaded", () => {
+  generarNacionesEnMapa("svg-mapa");
+});
