@@ -1,51 +1,39 @@
 // frontend/frontend/tools/biomas.js
 
-function asignarBiomasPersonalizados() {
-  if (!window.pack || !pack.cells || !pack.cells.biome) {
-    console.error("Mapa no compatible con el sistema de biomas.");
-    return;
-  }
+/**
+ * Script para gestionar los biomas del mapa principal.
+ * Puede integrarse con los datos de Azgaar o usarse en Panterra.
+ */
 
-  const biomas = {
-    0: "Océano",
-    1: "Tundra",
-    2: "Taiga",
-    3: "Bosque templado",
-    4: "Pradera",
-    5: "Bosque tropical",
-    6: "Sabana",
-    7: "Desierto cálido",
-    8: "Desierto frío",
-    9: "Pantano",
-    10: "Selva tropical",
-    11: "Alta montaña"
-  };
+const BIOMAS = [
+  { nombre: "Bosque", color: "#228B22" },
+  { nombre: "Desierto", color: "#EDC9AF" },
+  { nombre: "Tundra", color: "#B4D2E7" },
+  { nombre: "Montaña", color: "#A9A9A9" },
+  { nombre: "Pantano", color: "#556B2F" },
+  { nombre: "Pradera", color: "#ADFF2F" },
+  { nombre: "Selva", color: "#006400" }
+];
 
-  for (let i = 0; i < pack.cells.biome.length; i++) {
-    const altura = pack.cells.h[i];
-    const humedad = pack.cells.humidity[i];
+function aplicarBiomasEnMapa(mapaSVG) {
+  const mapa = document.getElementById(mapaSVG);
+  if (!mapa) return console.error("Mapa SVG no encontrado");
 
-    let biome = 0; // por defecto océano
-
-    if (altura > 0.8) biome = 11;
-    else if (altura > 0.6) biome = humedad < 0.2 ? 8 : 2;
-    else if (altura > 0.3) {
-      if (humedad < 0.1) biome = 7;
-      else if (humedad < 0.3) biome = 6;
-      else if (humedad < 0.5) biome = 4;
-      else biome = 3;
-    } else {
-      if (humedad < 0.2) biome = 7;
-      else if (humedad < 0.4) biome = 6;
-      else if (humedad < 0.6) biome = 9;
-      else biome = 10;
-    }
-
-    pack.cells.biome[i] = biome;
-  }
-
-  console.log("Biomas asignados:");
-  Object.entries(biomas).forEach(([id, name]) =>
-    console.log(`${id}: ${name}`)
-  );
+  BIOMAS.forEach(bioma => {
+    const region = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    region.setAttribute("x", Math.random() * 800);
+    region.setAttribute("y", Math.random() * 600);
+    region.setAttribute("width", 150);
+    region.setAttribute("height", 100);
+    region.setAttribute("fill", bioma.color);
+    region.setAttribute("opacity", 0.35);
+    region.setAttribute("class", "bioma-area");
+    region.setAttribute("title", bioma.nombre);
+    mapa.appendChild(region);
+  });
 }
+
+// Autoejecutar si el mapa está presente
+window.addEventListener("DOMContentLoaded", () => {
+  aplicarBiomasEnMapa("svg-mapa");
+});
