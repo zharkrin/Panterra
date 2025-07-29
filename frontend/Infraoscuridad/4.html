@@ -76,7 +76,7 @@
     }
 
     function cargarEstado() {
-      const estado = JSON.parse(localStorage.getItem("iconosMapa2"));
+      const estado = JSON.parse(localStorage.getItem("iconosMapa4"));
       if (!estado) return;
       estado.forEach(({ src, left, top }) => {
         const icono = document.createElement("img");
@@ -92,7 +92,7 @@
     function borrarMapa() {
       if (!confirm("¿Borrar todos los iconos del mapa?")) return;
       mapaContainer.querySelectorAll(".icono-draggable").forEach(e => e.remove());
-      localStorage.removeItem("iconosMapa2");
+      localStorage.removeItem("iconosMapa4");
     }
 
     window.onload = cargarEstado;
