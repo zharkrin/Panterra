@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submapa Entrada 3</title>  <!-- Aquí cambiamos el título a "Entrada 3" -->
+  <title>Submapa Entrada 3</title>
   <link rel="stylesheet" href="../assets/styles.css" />
   <style>
     #mapa-container { position: relative; max-width: 1200px; margin: auto; }
@@ -12,7 +12,7 @@
   </style>
 </head>
 <body>
-  <h1>Submapa - Entrada a la Infraoscuridad 3</h1> <!-- Aquí cambiamos el encabezado a "Entrada 3" -->
+  <h1>Submapa - Entrada a la Infraoscuridad 3</h1>
   <div id="mapa-container">
     <img id="mapa" src="../assets/mapa_nacion_base.JPG" alt="Mapa de entrada" />
   </div>
@@ -29,19 +29,17 @@
       mazmorra: "../assets/iconos/mazmorra.png"
     };
 
-    // Función para agregar un icono
     function agregarIcono(tipo) {
       const icono = document.createElement("img");
       icono.src = iconos[tipo];
       icono.classList.add("icono-draggable");
-      icono.style.left = "100px";  // Coordenadas predeterminadas
-      icono.style.top = "100px";   // Coordenadas predeterminadas
+      icono.style.left = "100px";
+      icono.style.top = "100px";
       hacerDraggable(icono);
       mapaContainer.appendChild(icono);
       guardarEstado();
     }
 
-    // Función para hacer los iconos arrastrables
     function hacerDraggable(elemento) {
       let offsetX, offsetY, isDragging = false;
       elemento.addEventListener("mousedown", e => {
@@ -65,7 +63,6 @@
       });
     }
 
-    // Función para guardar el estado de los iconos en el localStorage
     function guardarEstado() {
       const estado = [];
       mapaContainer.querySelectorAll(".icono-draggable").forEach(icono => {
@@ -75,12 +72,11 @@
           top: icono.style.top
         });
       });
-      localStorage.setItem("iconosMapa3", JSON.stringify(estado));  <!-- Cambié "iconosMapa2" por "iconosMapa3" -->
+      localStorage.setItem("iconosMapa3", JSON.stringify(estado));
     }
 
-    // Función para cargar el estado de los iconos desde el localStorage
     function cargarEstado() {
-      const estado = JSON.parse(localStorage.getItem("iconosMapa3"));  <!-- Cambié "iconosMapa2" por "iconosMapa3" -->
+      const estado = JSON.parse(localStorage.getItem("iconosMapa2"));
       if (!estado) return;
       estado.forEach(({ src, left, top }) => {
         const icono = document.createElement("img");
@@ -93,14 +89,12 @@
       });
     }
 
-    // Función para borrar todos los iconos y limpiar el localStorage
     function borrarMapa() {
       if (!confirm("¿Borrar todos los iconos del mapa?")) return;
       mapaContainer.querySelectorAll(".icono-draggable").forEach(e => e.remove());
-      localStorage.removeItem("iconosMapa3");  <!-- Cambié "iconosMapa2" por "iconosMapa3" -->
+      localStorage.removeItem("iconosMapa2");
     }
 
-    // Cargar el estado al cargar la página
     window.onload = cargarEstado;
   </script>
 </body>
