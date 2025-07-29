@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Infraoscuridad - Entrada 1</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #ccc;
+      font-family: 'Verdana', sans-serif;
+      text-align: center;
+    }
+    #mapa-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      margin: auto;
+      background-image: url('/assets/mapa_infra_base.JPG');
+      background-size: cover;
+      border: 2px solid #555;
+    }
+    .icono {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h1>Infraoscuridad - Entrada 1</h1>
+  <div id="mapa-container">
+    <img src="/assets/iconos/ciudad_oscura.png" class="icono" style="top: 100px; left: 200px;">
+    <img src="/assets/iconos/cueva.png" class="icono" style="top: 250px; left: 350px;">
+    <img src="/assets/iconos/mazmorra.png" class="icono" style="top: 400px; left: 500px;">
+  </div>
+  <script>
+    const mapa = document.getElementById('mapa-container');
+    const iconos = mapa.querySelectorAll('.icono');
+    const entradaID = 1;
+    iconos.forEach((icono, index) => {
+      icono.setAttribute('draggable', 'true');
+      icono.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', index);
+      });
+    });
+    mapa.addEventListener('dragover', e => e.preventDefault());
+    mapa.addEventListener('drop', e => {
+      e.preventDefault();
+      const index = e.dataTransfer.getData('text/plain');
+      const icono = iconos[index];
+      const x = e.offsetX - icono.offsetWidth / 2;
+      const y = e.offsetY - icono.offsetHeight / 2;
+      icono.style.left = `${x}px`;
+      icono.style.top = `${y}px`;
+      localStorage.setItem(`infra_entrada_${entradaID}_icono_${index}`, JSON.stringify({ x, y }));
+    });
+    iconos.forEach((icono, index) => {
+      const data = localStorage.getItem(`infra_entrada_${entradaID}_icono_${index}`);
+      if (data) {
+        const { x, y } = JSON.parse(data);
+        icono.style.left = `${x}px`;
+        icono.style.top = `${y}px`;
+      }
+    });
+  </script>
+</body>
+</html>
