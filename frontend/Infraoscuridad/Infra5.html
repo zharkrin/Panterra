@@ -1,101 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submapa Entrada 5</title>
-  <link rel="stylesheet" href="../assets/styles.css" />
+  <meta charset="UTF-8">
+  <title>Infraoscuridad - Nación 5</title>
+  <link rel="stylesheet" href="../assets/styles.css">
   <style>
-    #mapa-container { position: relative; max-width: 1200px; margin: auto; }
-    #mapa { width: 100%; display: block; }
-    .icono-draggable { position: absolute; width: 32px; height: 32px; cursor: grab; }
+    body {
+      background-color: #0d0d0d;
+      color: #ccc;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      color: #6be0f9;
+    }
+    #mapa {
+      width: 100%;
+      max-width: 1200px;
+      height: auto;
+      margin-top: 20px;
+      border: 3px solid #666;
+    }
   </style>
 </head>
 <body>
-  <h1>Submapa - Entrada a la Infraoscuridad 5</h1>
-  <div id="mapa-container">
-    <img id="mapa" src="../assets/mapa_nacion_base.JPG" alt="Mapa de entrada" />
-  </div>
-  <button onclick="agregarIcono('ciudad')">Ciudad</button>
-  <button onclick="agregarIcono('entrada')">Entrada</button>
-  <button onclick="agregarIcono('mazmorra')">Mazmorra</button>
-  <button onclick="borrarMapa()">Borrar Todo</button>
-
-  <script>
-    const mapaContainer = document.getElementById("mapa-container");
-    const iconos = {
-      ciudad: "../assets/iconos/ciudad.png",
-      entrada: "../assets/iconos/entrada.png",
-      mazmorra: "../assets/iconos/mazmorra.png"
-    };
-
-    function agregarIcono(tipo) {
-      const icono = document.createElement("img");
-      icono.src = iconos[tipo];
-      icono.classList.add("icono-draggable");
-      icono.style.left = "100px";
-      icono.style.top = "100px";
-      hacerDraggable(icono);
-      mapaContainer.appendChild(icono);
-      guardarEstado();
-    }
-
-    function hacerDraggable(elemento) {
-      let offsetX, offsetY, isDragging = false;
-      elemento.addEventListener("mousedown", e => {
-        isDragging = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
-        elemento.style.cursor = "grabbing";
-      });
-      document.addEventListener("mousemove", e => {
-        if (!isDragging) return;
-        const rect = mapaContainer.getBoundingClientRect();
-        elemento.style.left = `${e.clientX - rect.left - offsetX}px`;
-        elemento.style.top = `${e.clientY - rect.top - offsetY}px`;
-      });
-      document.addEventListener("mouseup", () => {
-        if (isDragging) {
-          isDragging = false;
-          elemento.style.cursor = "grab";
-          guardarEstado();
-        }
-      });
-    }
-
-    function guardarEstado() {
-      const estado = [];
-      mapaContainer.querySelectorAll(".icono-draggable").forEach(icono => {
-        estado.push({
-          src: icono.src,
-          left: icono.style.left,
-          top: icono.style.top
-        });
-      });
-      localStorage.setItem("iconosMapa5", JSON.stringify(estado));
-    }
-
-    function cargarEstado() {
-      const estado = JSON.parse(localStorage.getItem("iconosMapa5"));
-      if (!estado) return;
-      estado.forEach(({ src, left, top }) => {
-        const icono = document.createElement("img");
-        icono.src = src;
-        icono.classList.add("icono-draggable");
-        icono.style.left = left;
-        icono.style.top = top;
-        hacerDraggable(icono);
-        mapaContainer.appendChild(icono);
-      });
-    }
-
-    function borrarMapa() {
-      if (!confirm("¿Borrar todos los iconos del mapa?")) return;
-      mapaContainer.querySelectorAll(".icono-draggable").forEach(e => e.remove());
-      localStorage.removeItem("iconosMapa5");
-    }
-
-    window.onload = cargarEstado;
-  </script>
+  <h1>Infraoscuridad - Nación 5</h1>
+  <img id="mapa" src="../assets/infra_nacion_base.JPG" alt="Mapa Infraoscuridad Nación 5">
 </body>
 </html>
