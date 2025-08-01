@@ -4,10 +4,99 @@
   <meta charset="UTF-8">
   <title>Infraoscuridad - Base</title>
   <link rel="stylesheet" href="/assets/styles.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: #111;
+      color: #ccc;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+    #mapa {
+      position: relative;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .icono {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      cursor: move;
+    }
+  </style>
 </head>
 <body>
-  <h1>Mapa base de Infraoscuridad</h1>
-  <img src="/assets/mapa_infra_base.jpg" alt="Mapa Infraoscuridad" style="width: 100%; max-width: 1200px;">
-  <!-- Aquí puedes añadir iconos o scripts como hicimos con los mapas de nación -->
+  <div id="mapa">
+    <img src="/assets/mapa_infra_base.jpg" alt="Infraoscuridad" style="width:100%;">
+  </div>
+
+  <script>
+    const mapa = document.getElementById("mapa");
+    const iconos = [];
+
+    function cargarIconos() {
+      const datos = JSON.parse(localStorage.getItem("infraoscuridad_iconos") || "[]");
+      datos.forEach(({ src, x, y }) => {
+        const icono = document.createElement("img");
+        icono.src = src;
+        icono.className = "icono";
+        icono.style.left = x + "px";
+        icono.style.top = y + "px";
+        hacerArrastrable(icono);
+        mapa.appendChild(icono);
+        iconos.push(icono);
+      });
+    }
+
+    function guardarIconos() {
+      const datos = iconos.map(icono => ({
+        src: icono.src,
+        x: parseInt(icono.style.left),
+        y: parseInt(icono.style.top)
+      }));
+      localStorage.setItem("infraoscuridad_iconos", JSON.stringify(datos));
+    }
+
+    function hacerArrastrable(el) {
+      let offsetX, offsetY, activo = false;
+      el.addEventListener("mousedown", e => {
+        activo = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+      });
+      window.addEventListener("mousemove", e => {
+        if (!activo) return;
+        el.style.left = (e.pageX - offsetX) + "px";
+        el.style.top = (e.pageY - offsetY) + "px";
+      });
+      window.addEventListener("mouseup", () => {
+        activo = false;
+        guardarIconos();
+      });
+    }
+
+    // EJEMPLO: añadir un icono al iniciar
+    function crearIcono(src, x, y) {
+      const icono = document.createElement("img");
+      icono.src = src;
+      icono.className = "icono";
+      icono.style.left = x + "px";
+      icono.style.top = y + "px";
+      hacerArrastrable(icono);
+      mapa.appendChild(icono);
+      iconos.push(icono);
+      guardarIconos();
+    }
+
+    // Crear algunos si no hay
+    if (!localStorage.getItem("infraoscuridad_iconos")) {
+      crearIcono("/assets/iconos/entrada_infra.png", 200, 150);
+      crearIcono("/assets/iconos/ciudad_enana.png", 400, 220);
+      crearIcono("/assets/iconos/ciudad_drow.png", 600, 300);
+    }
+
+    cargarIconos();
+  </script>
 </body>
 </html>
