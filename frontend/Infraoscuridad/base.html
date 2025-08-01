@@ -1,102 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Infraoscuridad - Base</title>
-  <link rel="stylesheet" href="/assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submapa Infraoscuridad</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
   <style>
     body {
-      margin: 0;
       background-color: #111;
-      color: #ccc;
+      color: #eee;
       font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       overflow: hidden;
     }
     #mapa {
       position: relative;
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
+      background-image: url("../assets/infra_base.jpg");
+      background-size: cover;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
     }
     .icono {
       position: absolute;
       width: 32px;
       height: 32px;
       cursor: move;
+      z-index: 10;
+    }
+    .botones {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .botones button {
+      margin: 5px;
+      padding: 8px 12px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .botones button:hover {
+      background: #555;
     }
   </style>
 </head>
 <body>
-  <div id="mapa">
-    <img src="/assets/mapa_infra_base.jpg" alt="Infraoscuridad" style="width:100%;">
+  <div class="botones">
+    <button onclick="agregarIcono('ciudad_enana')">Ciudad Enana</button>
+    <button onclick="agregarIcono('ciudad_elfo_oscuro')">Ciudad Elfo Oscuro</button>
+    <button onclick="agregarIcono('entrada')">Entrada</button>
+    <button onclick="agregarIcono('mazmorra')">Mazmorra</button>
+    <button onclick="guardar()">Guardar</button>
+    <button onclick="borrar()">Borrar</button>
   </div>
+
+  <div id="mapa"></div>
 
   <script>
     const mapa = document.getElementById("mapa");
-    const iconos = [];
+    const submapaID = window.location.pathname.split("/").pop().replace(".html", "");
 
-    function cargarIconos() {
-      const datos = JSON.parse(localStorage.getItem("infraoscuridad_iconos") || "[]");
-      datos.forEach(({ src, x, y }) => {
-        const icono = document.createElement("img");
-        icono.src = src;
-        icono.className = "icono";
-        icono.style.left = x + "px";
-        icono.style.top = y + "px";
-        hacerArrastrable(icono);
-        mapa.appendChild(icono);
-        iconos.push(icono);
+    function crearIcono(tipo, x, y) {
+      const icono = document.createElement("img");
+      icono.src = `../assets/iconos/${tipo}.png`;
+      icono.className = "icono";
+      icono.style.left = `${x}px`;
+      icono.style.top = `${y}px`;
+      icono.draggable = true;
+
+      icono.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", null);
+        icono.dataset.offsetX = e.offsetX;
+        icono.dataset.offsetY = e.offsetY;
       });
+
+      icono.addEventListener("dragend", e => {
+        const offsetX = parseInt(icono.dataset.offsetX);
+        const offsetY = parseInt(icono.dataset.offsetY);
+        icono.style.left = `${e.pageX - offsetX}px`;
+        icono.style.top = `${e.pageY - offsetY}px`;
+      });
+
+      mapa.appendChild(icono);
     }
 
-    function guardarIconos() {
-      const datos = iconos.map(icono => ({
-        src: icono.src,
+    function agregarIcono(tipo) {
+      crearIcono(tipo, 100, 100);
+    }
+
+    function guardar() {
+      const iconos = document.querySelectorAll(".icono");
+      const data = Array.from(iconos).map(icono => ({
+        tipo: icono.src.split("/").pop().replace(".png", ""),
         x: parseInt(icono.style.left),
         y: parseInt(icono.style.top)
       }));
-      localStorage.setItem("infraoscuridad_iconos", JSON.stringify(datos));
+      localStorage.setItem("infra_" + submapaID, JSON.stringify(data));
+      alert("Mapa guardado.");
     }
 
-    function hacerArrastrable(el) {
-      let offsetX, offsetY, activo = false;
-      el.addEventListener("mousedown", e => {
-        activo = true;
-        offsetX = e.offsetX;
-        offsetY = e.offsetY;
-      });
-      window.addEventListener("mousemove", e => {
-        if (!activo) return;
-        el.style.left = (e.pageX - offsetX) + "px";
-        el.style.top = (e.pageY - offsetY) + "px";
-      });
-      window.addEventListener("mouseup", () => {
-        activo = false;
-        guardarIconos();
-      });
+    function borrar() {
+      localStorage.removeItem("infra_" + submapaID);
+      location.reload();
     }
 
-    // EJEMPLO: añadir un icono al iniciar
-    function crearIcono(src, x, y) {
-      const icono = document.createElement("img");
-      icono.src = src;
-      icono.className = "icono";
-      icono.style.left = x + "px";
-      icono.style.top = y + "px";
-      hacerArrastrable(icono);
-      mapa.appendChild(icono);
-      iconos.push(icono);
-      guardarIconos();
+    function cargar() {
+      const data = localStorage.getItem("infra_" + submapaID);
+      if (data) {
+        JSON.parse(data).forEach(icono => {
+          crearIcono(icono.tipo, icono.x, icono.y);
+        });
+      }
     }
 
-    // Crear algunos si no hay
-    if (!localStorage.getItem("infraoscuridad_iconos")) {
-      crearIcono("/assets/iconos/entrada_infra.png", 200, 150);
-      crearIcono("/assets/iconos/ciudad_enana.png", 400, 220);
-      crearIcono("/assets/iconos/ciudad_drow.png", 600, 300);
-    }
-
-    cargarIconos();
+    window.onload = cargar;
   </script>
 </body>
 </html>
