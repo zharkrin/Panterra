@@ -60,6 +60,7 @@ function iniciarCiudadesInfra(nivel) {
     label.style.padding = "1px 4px";
     label.style.borderRadius = "4px";
     label.style.userSelect = "text";
+    label.style.pointerEvents = "auto";
 
     wrapper.appendChild(label);
     wrapper.appendChild(img);
