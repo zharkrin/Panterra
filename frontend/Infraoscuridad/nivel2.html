@@ -20,21 +20,17 @@
     }
 
     .icono {
-      position: absolute;
       width: 40px;
       height: 40px;
-      cursor: grab;
-      z-index: 10;
     }
 
-    .icono:active {
-      cursor: grabbing;
+    .ciudad-label {
+      pointer-events: auto;
     }
 
-    #boton-agregar {
+    #boton-agregar, #boton-borrar {
       position: absolute;
       top: 10px;
-      left: 10px;
       z-index: 20;
       background: #222;
       color: white;
@@ -42,6 +38,10 @@
       border: none;
       border-radius: 4px;
       font-family: sans-serif;
+    }
+
+    #boton-agregar {
+      left: 10px;
     }
 
     #boton-borrar {
