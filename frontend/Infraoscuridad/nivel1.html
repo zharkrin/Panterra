@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Infraoscuridad – Nivel 1</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #mapa {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('../assets/infraoscuridad_base_nivel1.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .icono {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      cursor: grab;
+      z-index: 10;
+    }
+
+    .icono:active {
+      cursor: grabbing;
+    }
+
+    #boton-agregar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 20;
+      background: #222;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-family: sans-serif;
+    }
+
+    #boton-borrar {
+      left: 140px;
+    }
+  </style>
+</head>
+<body>
+  <div id="mapa"></div>
+  <button id="boton-agregar">➕ Añadir ciudad</button>
+  <button id="boton-borrar">🗑️ Borrar todas</button>
+
+  <script src="../js/ciudades_infra.js"></script>
+  <script>
+    iniciarCiudadesInfra("nivel1");
+  </script>
+</body>
+</html>
