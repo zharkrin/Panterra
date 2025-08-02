@@ -1,65 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Infraoscuridad – Nivel 3</title>
+  <meta charset="UTF-8">
+  <title>Infraoscuridad - Nivel 3</title>
   <style>
     body {
       margin: 0;
-      background: #000;
       overflow: hidden;
+      background-color: #000;
     }
 
     #mapa {
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-image: url('../assets/infraoscuridad_base_nivel3.jpg');
+      background-image: url('../assets/infraoscuridad_base_nivel1.jpg'); /* Puedes dejarlo así hasta tenerla */
       background-size: cover;
       background-position: center;
     }
 
     button {
-      position: absolute;
+      position: fixed;
       top: 10px;
-      z-index: 30;
-      background: #222;
-      color: white;
-      padding: 8px 12px;
+      padding: 6px 12px;
+      z-index: 100;
+      font-family: sans-serif;
+      font-size: 14px;
+      background: #333;
+      color: #fff;
       border: none;
       border-radius: 4px;
-      font-family: sans-serif;
       cursor: pointer;
-      user-select: none;
     }
 
     #boton-agregar {
       left: 10px;
     }
+
     #boton-borrar {
       left: 140px;
     }
-    #btn-agregar-rio {
-      left: 280px;
+
+    #boton-rio {
+      left: 270px;
     }
-    #btn-borrar-rios {
-      left: 400px;
+
+    #boton-borrar-rios {
+      left: 390px;
+    }
+
+    #btn-volver {
+      left: 540px;
+    }
+
+    .icono {
+      pointer-events: none;
+    }
+
+    .ciudad-label {
+      pointer-events: auto;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div id="mapa"></div>
+  <div id="mapa">
+    <canvas id="canvas-rios"></canvas>
+  </div>
 
   <button id="boton-agregar">➕ Añadir ciudad</button>
   <button id="boton-borrar">🗑️ Borrar ciudades</button>
-  <button id="btn-agregar-rio">➕ Añadir río</button>
-  <button id="btn-borrar-rios">🗑️ Borrar ríos</button>
+  <button id="boton-rio">💧 Añadir río</button>
+  <button id="boton-borrar-rios">🗑️ Borrar ríos</button>
+  <button id="btn-volver">⏎ Volver al mapa principal</button>
 
   <script src="../js/ciudades_infra.js"></script>
   <script src="../js/rios_infra.js"></script>
   <script>
     iniciarCiudadesInfra("nivel3");
     iniciarRiosInfra("nivel3");
+
+    document.getElementById("btn-volver").onclick = () => {
+      window.location.href = "../mapa.html"; // Cambia esto si tu ruta principal es otra
+    };
   </script>
 </body>
 </html>
