@@ -1,0 +1,45 @@
+<div id="selector-nivel">
+  <button onclick="irANivel('nivel3.html')">⬇ Nivel 3</button>
+  <button onclick="irANivel('nivel2.html')">⬇ Nivel 2</button>
+  <button onclick="irANivel('nivel1.html')">⬆ Nivel 1</button>
+</div>
+
+<style>
+  #selector-nivel {
+    position: fixed;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(15, 15, 15, 0.85);
+    border: 2px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  #selector-nivel button {
+    background: #1c1c1c;
+    color: #0ff;
+    border: 1px solid #0ff;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-family: monospace;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  #selector-nivel button:hover {
+    background: #0ff;
+    color: #000;
+  }
+</style>
+
+<script>
+  function irANivel(nivel) {
+    window.location.href = nivel;
+  }
+</script>
