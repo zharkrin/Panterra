@@ -1,33 +1,33 @@
 // frontend/static/js/biomas.js
 
-// Lista de tipos de biomas para la Infraoscuridad
+// Tipos de biomas para Infraoscuridad, con sus probabilidades
 const tiposBioma = [
-  'magma',
-  'hongos',
-  'cristal',
-  'ruinas',
-  'lago',
-  'vacio'
+  { tipo: 'magma', prob: 0.15 },
+  { tipo: 'hongos', prob: 0.30 },
+  { tipo: 'cristal', prob: 0.20 },
+  { tipo: 'ruinas', prob: 0.20 },
+  { tipo: 'lago', prob: 0.10 },
+  { tipo: 'vacio', prob: 0.05 }
 ];
 
-// Función para generar un mapa de biomas de ancho x alto
+// Función para generar biomas aleatorios ponderados
 export function generarBiomas(ancho, alto) {
   const biomas = [];
 
   for (let y = 0; y < alto; y++) {
     const fila = [];
     for (let x = 0; x < ancho; x++) {
-      // Probabilidad ponderada para cada tipo
       const r = Math.random();
-      let tipo;
+      let acumulado = 0;
+      let tipo = 'vacio';
 
-      if (r < 0.15) tipo = 'magma';
-      else if (r < 0.35) tipo = 'hongos';
-      else if (r < 0.50) tipo = 'cristal';
-      else if (r < 0.70) tipo = 'ruinas';
-      else if (r < 0.85) tipo = 'lago';
-      else tipo = 'vacio';
-
+      for (const t of tiposBioma) {
+        acumulado += t.prob;
+        if (r < acumulado) {
+          tipo = t.tipo;
+          break;
+        }
+      }
       fila.push(tipo);
     }
     biomas.push(fila);
