@@ -1,83 +1,15 @@
+
+<!-- frontend/infraoscuridad/nivel3.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Infraoscuridad - Nivel 3</title>
-  <style>
-    body { margin: 0; background: #111; }
-    canvas { display: block; margin: 0 auto; background: #000; }
-  </style>
+  <link rel="stylesheet" href="/static/css/infraoscuridad.css">
+  <script type="module" src="/static/js/nivel_base.js"></script>
 </head>
 <body>
-<canvas id="mapa" width="1600" height="900"></canvas>
-
-<script>
-  const canvas = document.getElementById('mapa');
-  const ctx = canvas.getContext('2d');
-
-  const tileWidth = 64;
-  const tileHeight = 32;
-  const mapWidth = 20;
-  const mapHeight = 20;
-  let scale = 1;
-  let offsetX = canvas.width / 2;
-  let offsetY = 100;
-
-  const biomas = [
-    '#444444', // Roca
-    '#6688aa', // Cristal
-    '#447744', // Hongos
-    '#cc3300', // Lava
-    '#003366', // Agua
-    '#999977'  // Ruinas
-  ];
-
-  const mapaBiomas = [];
-  for (let y = 0; y < mapHeight; y++) {
-    let fila = [];
-    for (let x = 0; x < mapWidth; x++) {
-      fila.push(Math.floor(Math.random() * biomas.length));
-    }
-    mapaBiomas.push(fila);
-  }
-
-  function drawTile(x, y, color) {
-    const isoX = (x - y) * tileWidth / 2;
-    const isoY = (x + y) * tileHeight / 2;
-
-    ctx.save();
-    ctx.translate(offsetX + isoX * scale, offsetY + isoY * scale);
-    ctx.scale(scale, scale);
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(tileWidth / 2, tileHeight / 2);
-    ctx.lineTo(0, tileHeight);
-    ctx.lineTo(-tileWidth / 2, tileHeight / 2);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function renderMapa() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let y = 0; y < mapHeight; y++) {
-      for (let x = 0; x < mapWidth; x++) {
-        const tipo = mapaBiomas[y][x];
-        const color = biomas[tipo];
-        drawTile(x, y, color);
-      }
-    }
-  }
-
-  renderMapa();
-
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(0.3, scale), 3);
-    renderMapa();
-  });
-</script>
+  <h1>Nivel 3 - Infraoscuridad</h1>
+  <canvas id="mapa" width="2048" height="2048"></canvas>
 </body>
 </html>
