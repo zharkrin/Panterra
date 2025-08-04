@@ -1,1 +1,80 @@
+/* frontend/static/css/infraoscuridad.css */
 
+body {
+  margin: 0;
+  background-color: #0d0d0f;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+#visor {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #101010;
+}
+
+/* Canvas isométrico */
+canvas#mapa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+}
+
+/* Etiquetas flotantes (nombres de ciudades, biomas, ríos) */
+.etiqueta {
+  position: absolute;
+  color: #e0e0e0;
+  background-color: rgba(10, 10, 10, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+}
+
+/* Colores de biomas */
+.tile-magma {
+  background-color: #8b0000;
+}
+.tile-hongos {
+  background-color: #2e8b57;
+}
+.tile-cristal {
+  background-color: #87ceeb;
+}
+.tile-ruinas {
+  background-color: #4b4b4b;
+}
+.tile-lago {
+  background-color: #1e3f66;
+}
+.tile-vacio {
+  background-color: #000000;
+}
+
+/* Estilo para los ríos subterráneos */
+.rio {
+  stroke: #3ac6ff;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  opacity: 0.6;
+}
+
+/* Opcional: selector de nivel */
+#selector-nivel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 99;
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
