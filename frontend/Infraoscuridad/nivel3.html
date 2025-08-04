@@ -1,15 +1,49 @@
-
 <!-- frontend/infraoscuridad/nivel3.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Infraoscuridad - Nivel 3</title>
-  <link rel="stylesheet" href="/static/css/infraoscuridad.css">
-  <script type="module" src="/static/js/nivel_base.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: #111;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      z-index: 1;
+    }
+
+    #visor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .etiqueta {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      color: #ccc;
+      font-size: 12px;
+      background-color: rgba(0,0,0,0.6);
+      padding: 1px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
-  <h1>Nivel 3 - Infraoscuridad</h1>
-  <canvas id="mapa" width="2048" height="2048"></canvas>
+
+  <canvas id="mapa"></canvas>
+  <div id="visor"></div>
+
+  <script type="module" src="/static/js/nivel_base.js"></script>
+
 </body>
 </html>
