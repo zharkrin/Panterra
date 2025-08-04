@@ -4,11 +4,46 @@
 <head>
   <meta charset="UTF-8">
   <title>Infraoscuridad - Nivel 2</title>
-  <link rel="stylesheet" href="/static/css/infraoscuridad.css">
-  <script type="module" src="/static/js/nivel_base.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background-color: #0f0f0f;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      z-index: 1;
+    }
+
+    #visor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .etiqueta {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      color: #dddddd;
+      font-size: 12px;
+      background-color: rgba(10,10,10,0.6);
+      padding: 2px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
-  <h1>Nivel 2 - Infraoscuridad</h1>
-  <canvas id="mapa" width="2048" height="2048"></canvas>
+
+  <canvas id="mapa"></canvas>
+  <div id="visor"></div>
+
+  <script type="module" src="/static/js/nivel_base.js"></script>
+
 </body>
 </html>
