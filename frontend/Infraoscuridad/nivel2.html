@@ -6,88 +6,69 @@
   <style>
     body {
       margin: 0;
-      background: #0e0e0e url('../assets/mapas/infraoscuridad/nivel2_base.jpg') no-repeat center center;
-      background-size: cover;
       overflow: hidden;
+      background-color: #111;
     }
-
-    #visor {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 3000px;
-      height: 3000px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, 512px);
-      grid-auto-rows: 256px;
-      pointer-events: none;
-    }
-
-    .tile {
-      width: 512px;
-      height: 512px;
-      pointer-events: auto;
-      position: relative;
-    }
-
-    .tile img {
-      width: 512px;
-      height: 512px;
-      image-rendering: pixelated;
-    }
-
-    #selector-nivel {
-      position: fixed;
-      top: 50%;
-      right: 15px;
-      transform: translateY(-50%);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: rgba(15, 15, 15, 0.85);
-      border: 2px solid #333;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    #selector-nivel button {
-      background: #1c1c1c;
-      color: #0ff;
-      border: 1px solid #0ff;
-      padding: 6px 10px;
-      font-weight: bold;
-      font-family: monospace;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: all 0.2s;
-    }
-
-    #selector-nivel button:hover {
-      background: #0ff;
-      color: #000;
+    canvas {
+      display: block;
+      background-color: #000;
     }
   </style>
 </head>
 <body>
-
-<div id="visor">
-  <!-- Aquí se insertarán tiles isométricos -->
-  <div class="tile"><img src="../assets/tiles/suelo/suelo2.png" alt="tile"></div>
-</div>
-
-<div id="selector-nivel">
-  <button onclick="irANivel('nivel3.html')">⬇ Nivel 3</button>
-  <button onclick="irANivel('nivel2.html')">⬆ Nivel 2</button>
-  <button onclick="irANivel('nivel1.html')">⬆ Nivel 1</button>
-</div>
-
+<canvas id="canvas"></canvas>
 <script>
-  function irANivel(nivel) {
-    window.location.href = nivel;
-  }
-</script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const tileWidth = 64;
+  const tileHeight = 32;
+  const mapWidth = 20;
+  const mapHeight = 20;
+
+  let scale = 1;
+  let offsetX = canvas.width / 2;
+  let offsetY = 100;
+
+  const terrain = ["#223", "#334", "#445"];
+
+  function drawTile(x, y, color) {
+    const isoX = (x - y) * tileWidth / 2 * scale + offsetX;
+    const isoY = (x + y) * tileHeight / 2 * scale + offsetY;
+
+    ctx.beginPath();
+    ctx.moveTo(isoX, isoY);
+    ctx.lineTo(isoX + tileWidth / 2 * scale, isoY + tileHeight / 2 * scale);
+    ctx.lineTo(isoX, isoY + tileHeight * scale);
+    ctx.lineTo(isoX - tileWidth / 2 * scale, isoY + tileHeight / 2 * scale);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = "#111";
+    ctx.stroke();
+  }
+
+  function drawMap() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let y = 0; y < mapHeight; y++) {
+      for (let x = 0; x < mapWidth; x++) {
+        const color = terrain[(x + y) % terrain.length];
+        drawTile(x, y, color);
+      }
+    }
+  }
+
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 1.1 : 0.9;
+    scale *= delta;
+    drawMap();
+  });
+
+  drawMap();
+</script>
 </body>
 </html>
