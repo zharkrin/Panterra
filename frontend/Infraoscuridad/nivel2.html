@@ -2,94 +2,180 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Infraoscuridad - Nivel 2</title>
+  <title>Infraoscuridad – Nivel 2 (Vista Isométrica)</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
       overflow: hidden;
-      background-color: #000;
+      background: #000;
     }
 
     #mapa {
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-image: url('../assets/infraoscuridad_base_nivel2.jpg'); /* Puedes dejarlo así hasta tener la imagen */
-      background-size: cover;
-      background-position: center;
+      background: #111;
     }
 
-    button {
+    .tile {
+      position: absolute;
+      width: 512px;
+      height: 512px;
+      pointer-events: none;
+      image-rendering: pixelated;
+    }
+
+    .editor-tile {
+      pointer-events: auto;
+      cursor: move;
+    }
+
+    #toolbar {
       position: fixed;
       top: 10px;
-      padding: 6px 12px;
-      z-index: 100;
-      font-family: sans-serif;
-      font-size: 14px;
-      background: #333;
-      color: #fff;
+      left: 10px;
+      z-index: 999;
+      display: flex;
+      gap: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .btn-tile {
+      width: 64px;
+      height: 64px;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #222;
+    }
+
+    .btn-tile.selected {
+      border-color: #0ff;
+    }
+
+    #btn-guardar {
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 6px;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
     }
 
-    #boton-agregar {
-      left: 10px;
-    }
-
-    #boton-borrar {
-      left: 140px;
-    }
-
-    #boton-rio {
-      left: 270px;
-    }
-
-    #boton-borrar-rios {
-      left: 390px;
-    }
-
-    #btn-volver {
-      left: 540px;
-    }
-
-    .icono {
-      pointer-events: none;
-    }
-
-    .ciudad-label {
-      pointer-events: auto;
-    }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 5;
-      pointer-events: none;
+    #btn-borrar {
+      background: #f00;
+      color: #fff;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div id="mapa">
-    <canvas id="canvas-rios"></canvas>
+  <div id="toolbar">
+    <img src="../assets/tiles/suelo/tierra.png" class="btn-tile selected" data-src="../assets/tiles/suelo/tierra.png">
+    <img src="../assets/tiles/ciudades/cueva1.png" class="btn-tile" data-src="../assets/tiles/ciudades/cueva1.png">
+    <img src="../assets/tiles/entradas/entrada2.png" class="btn-tile" data-src="../assets/tiles/entradas/entrada2.png">
+    <button id="btn-guardar">💾 Guardar</button>
+    <button id="btn-borrar">🗑️ Borrar todo</button>
   </div>
 
-  <button id="boton-agregar">➕ Añadir ciudad</button>
-  <button id="boton-borrar">🗑️ Borrar ciudades</button>
-  <button id="boton-rio">💧 Añadir río</button>
-  <button id="boton-borrar-rios">🗑️ Borrar ríos</button>
-  <button id="btn-volver">⏎ Volver al mapa principal</button>
+  <div id="mapa"></div>
 
-  <script src="../js/ciudades_infra.js"></script>
-  <script src="../js/rios_infra.js"></script>
   <script>
-    iniciarCiudadesInfra("nivel2");
-    iniciarRiosInfra("nivel2");
+    const mapa = document.getElementById("mapa");
+    const toolbar = document.getElementById("toolbar");
+    const tileButtons = document.querySelectorAll(".btn-tile");
+    let tileSeleccionado = "../assets/tiles/suelo/tierra.png";
 
-    document.getElementById("btn-volver").onclick = () => {
-      window.location.href = "../mapa.html"; // Ajusta la ruta si es necesario
+    // Selección de tile
+    tileButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tileButtons.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        tileSeleccionado = btn.dataset.src;
+      });
+    });
+
+    // Agregar tile con clic
+    mapa.addEventListener("click", (e) => {
+      const x = e.clientX - 256;
+      const y = e.clientY - 256;
+
+      const tile = document.createElement("img");
+      tile.src = tileSeleccionado;
+      tile.className = "tile editor-tile";
+      tile.style.left = x + "px";
+      tile.style.top = y + "px";
+      tile.draggable = true;
+
+      tile.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", null);
+        e.target.dataset.offsetX = e.offsetX;
+        e.target.dataset.offsetY = e.offsetY;
+      });
+
+      tile.addEventListener("dragend", e => {
+        const offsetX = parseInt(e.target.dataset.offsetX);
+        const offsetY = parseInt(e.target.dataset.offsetY);
+        e.target.style.left = (e.clientX - offsetX) + "px";
+        e.target.style.top = (e.clientY - offsetY) + "px";
+      });
+
+      mapa.appendChild(tile);
+      guardarTiles();
+    });
+
+    function guardarTiles() {
+      const tiles = Array.from(document.querySelectorAll(".tile")).map(t => ({
+        src: t.src,
+        left: t.style.left,
+        top: t.style.top
+      }));
+      localStorage.setItem("infra_nivel2_tiles", JSON.stringify(tiles));
+    }
+
+    function cargarTiles() {
+      const data = JSON.parse(localStorage.getItem("infra_nivel2_tiles") || "[]");
+      data.forEach(d => {
+        const tile = document.createElement("img");
+        tile.src = d.src;
+        tile.className = "tile editor-tile";
+        tile.style.left = d.left;
+        tile.style.top = d.top;
+        tile.draggable = true;
+
+        tile.addEventListener("dragstart", e => {
+          e.dataTransfer.setData("text/plain", null);
+          e.target.dataset.offsetX = e.offsetX;
+          e.target.dataset.offsetY = e.offsetY;
+        });
+
+        tile.addEventListener("dragend", e => {
+          const offsetX = parseInt(e.target.dataset.offsetX);
+          const offsetY = parseInt(e.target.dataset.offsetY);
+          e.target.style.left = (e.clientX - offsetX) + "px";
+          e.target.style.top = (e.clientY - offsetY) + "px";
+          guardarTiles();
+        });
+
+        mapa.appendChild(tile);
+      });
+    }
+
+    document.getElementById("btn-guardar").onclick = guardarTiles;
+    document.getElementById("btn-borrar").onclick = () => {
+      localStorage.removeItem("infra_nivel2_tiles");
+      location.reload();
     };
+
+    cargarTiles();
   </script>
 </body>
 </html>
