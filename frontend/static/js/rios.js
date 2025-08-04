@@ -1,73 +1,34 @@
 // frontend/static/js/rios.js
 
-export function generarAltitud(ancho, alto) {
-  const altitud = [];
-  for (let y = 0; y < alto; y++) {
-    altitud[y] = [];
-    for (let x = 0; x < ancho; x++) {
-      const ruido = Math.random() * 2 - 1;
-      altitud[y][x] = Math.sin(x / 10) + Math.cos(y / 10) + ruido;
-    }
-  }
-  return altitud;
-}
-
-export function generarRios(altitud, ancho, alto, cantidad = 5) {
+// Función para generar un conjunto de ríos subterráneos
+export function generarRios(ancho, alto, cantidad = 8) {
   const rios = [];
 
   for (let i = 0; i < cantidad; i++) {
-    // Punto alto inicial
-    let max = -Infinity;
-    let inicio = { x: 0, y: 0 };
+    let largo = 40 + Math.floor(Math.random() * 60); // Longitud entre 40 y 100
+    let x = Math.floor(Math.random() * ancho);
+    let y = Math.floor(Math.random() * alto);
+    const puntos = [{ x, y }];
 
-    for (let y = 0; y < alto; y++) {
-      for (let x = 0; x < ancho; x++) {
-        if (altitud[y][x] > max) {
-          max = altitud[y][x];
-          inicio = { x, y };
-        }
-      }
-    }
-
-    const rio = [inicio];
-    let actual = { ...inicio };
-
-    for (let paso = 0; paso < 150; paso++) {
-      const vecinos = obtenerVecinos(actual.x, actual.y, ancho, alto);
-      let siguiente = null;
-      let menorAltitud = altitud[actual.y][actual.x];
-
-      for (const v of vecinos) {
-        const a = altitud[v.y][v.x];
-        if (a < menorAltitud) {
-          menorAltitud = a;
-          siguiente = v;
-        }
+    for (let j = 1; j < largo; j++) {
+      const dirección = Math.floor(Math.random() * 6);
+      switch (dirección) {
+        case 0: x += 1; break;
+        case 1: x -= 1; break;
+        case 2: y += 1; break;
+        case 3: y -= 1; break;
+        case 4: x += 1; y += 1; break;
+        case 5: x -= 1; y -= 1; break;
       }
 
-      if (!siguiente || rio.some(p => p.x === siguiente.x && p.y === siguiente.y)) break;
+      // Asegurar que el río no se salga del mapa
+      if (x < 0 || x >= ancho || y < 0 || y >= alto) break;
 
-      rio.push(siguiente);
-      actual = siguiente;
+      puntos.push({ x, y });
     }
 
-    rios.push(rio);
+    rios.push(puntos);
   }
 
   return rios;
-}
-
-function obtenerVecinos(x, y, ancho, alto) {
-  const vecinos = [];
-  for (let dx = -1; dx <= 1; dx++) {
-    for (let dy = -1; dy <= 1; dy++) {
-      if (dx === 0 && dy === 0) continue;
-      const nx = x + dx;
-      const ny = y + dy;
-      if (nx >= 0 && ny >= 0 && nx < ancho && ny < alto) {
-        vecinos.push({ x: nx, y: ny });
-      }
-    }
-  }
-  return vecinos;
 }
