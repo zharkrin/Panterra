@@ -1,74 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Infraoscuridad - Nivel 3</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #000;
-    }
-    canvas {
-      display: block;
-      background-color: #000;
-    }
+    body { margin: 0; background: #111; }
+    canvas { display: block; margin: 0 auto; background: #000; }
   </style>
 </head>
 <body>
-<canvas id="canvas"></canvas>
-<script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+<canvas id="mapa" width="1600" height="900"></canvas>
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+<script>
+  const canvas = document.getElementById('mapa');
+  const ctx = canvas.getContext('2d');
 
   const tileWidth = 64;
   const tileHeight = 32;
   const mapWidth = 20;
   const mapHeight = 20;
-
   let scale = 1;
   let offsetX = canvas.width / 2;
   let offsetY = 100;
 
-  const terrain = ["#111", "#1a1a1a", "#222"];
+  const biomas = [
+    '#444444', // Roca
+    '#6688aa', // Cristal
+    '#447744', // Hongos
+    '#cc3300', // Lava
+    '#003366', // Agua
+    '#999977'  // Ruinas
+  ];
+
+  const mapaBiomas = [];
+  for (let y = 0; y < mapHeight; y++) {
+    let fila = [];
+    for (let x = 0; x < mapWidth; x++) {
+      fila.push(Math.floor(Math.random() * biomas.length));
+    }
+    mapaBiomas.push(fila);
+  }
 
   function drawTile(x, y, color) {
-    const isoX = (x - y) * tileWidth / 2 * scale + offsetX;
-    const isoY = (x + y) * tileHeight / 2 * scale + offsetY;
+    const isoX = (x - y) * tileWidth / 2;
+    const isoY = (x + y) * tileHeight / 2;
 
+    ctx.save();
+    ctx.translate(offsetX + isoX * scale, offsetY + isoY * scale);
+    ctx.scale(scale, scale);
     ctx.beginPath();
-    ctx.moveTo(isoX, isoY);
-    ctx.lineTo(isoX + tileWidth / 2 * scale, isoY + tileHeight / 2 * scale);
-    ctx.lineTo(isoX, isoY + tileHeight * scale);
-    ctx.lineTo(isoX - tileWidth / 2 * scale, isoY + tileHeight / 2 * scale);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(tileWidth / 2, tileHeight / 2);
+    ctx.lineTo(0, tileHeight);
+    ctx.lineTo(-tileWidth / 2, tileHeight / 2);
     ctx.closePath();
     ctx.fillStyle = color;
     ctx.fill();
-    ctx.strokeStyle = "#111";
-    ctx.stroke();
+    ctx.restore();
   }
 
-  function drawMap() {
+  function renderMapa() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (let y = 0; y < mapHeight; y++) {
       for (let x = 0; x < mapWidth; x++) {
-        const color = terrain[(x + y) % terrain.length];
+        const tipo = mapaBiomas[y][x];
+        const color = biomas[tipo];
         drawTile(x, y, color);
       }
     }
   }
 
-  canvas.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    const delta = e.deltaY < 0 ? 1.1 : 0.9;
-    scale *= delta;
-    drawMap();
-  });
+  renderMapa();
 
-  drawMap();
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    scale += e.deltaY * -0.001;
+    scale = Math.min(Math.max(0.3, scale), 3);
+    renderMapa();
+  });
 </script>
 </body>
 </html>
