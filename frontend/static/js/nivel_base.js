@@ -3,80 +3,92 @@
 import { generarBiomas } from './biomas.js';
 import { generarRios } from './rios.js';
 
+const TILE = 64; // tamaño de cada tile
+const ANCHO = 30;
+const ALTO = 30;
+
 const canvas = document.getElementById('mapa');
 const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Dimensiones
-const TILE_WIDTH = 512;
-const TILE_HEIGHT = 256;
+const visor = document.getElementById('visor');
 
-// Mapa de 10x10 celdas como base
-const MAP_WIDTH = 10;
-const MAP_HEIGHT = 10;
+const biomas = generarBiomas(ANCHO, ALTO);
+const rios = generarRios(ANCHO, ALTO);
 
-// Tiles locales (sin dependencia externa)
-const biomasTiles = {
-  magma: '/static/Tiles/magma.png',
-  hongos: '/static/Tiles/hongos.png',
-  cristal: '/static/Tiles/cristal.png',
-  ruinas: '/static/Tiles/ruinas.png',
-  lago: '/static/Tiles/lago_subterraneo.png',
-  vacio: '/static/Tiles/vacio.png'
-};
-
-// Cargar imagen desde ruta
-function cargarImagen(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
+// Utilidades de coordenadas isométricas
+function isoX(x, y) {
+  return (x - y) * TILE + canvas.width / 2;
 }
 
-// Dibuja un tile isométrico
-function dibujarTile(img, x, y) {
-  const isoX = (x - y) * (TILE_WIDTH / 2) + canvas.width / 2 - TILE_WIDTH / 2;
-  const isoY = (x + y) * (TILE_HEIGHT / 2);
-  ctx.drawImage(img, isoX, isoY, TILE_WIDTH, TILE_HEIGHT);
+function isoY(x, y) {
+  return (x + y) * TILE / 2;
 }
 
-// Dibujar todo el mapa
-async function dibujarMapa() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Dibujar el terreno
+function dibujarTerreno() {
+  for (let y = 0; y < ALTO; y++) {
+    for (let x = 0; x < ANCHO; x++) {
+      const tipo = biomas[y][x];
+      const screenX = isoX(x, y);
+      const screenY = isoY(x, y);
 
-  const biomas = generarBiomas(MAP_WIDTH, MAP_HEIGHT);
-  const rios = generarRios(MAP_WIDTH, MAP_HEIGHT);
+      ctx.fillStyle = obtenerColorBioma(tipo);
+      ctx.beginPath();
+      ctx.moveTo(screenX, screenY);
+      ctx.lineTo(screenX + TILE, screenY + TILE / 2);
+      ctx.lineTo(screenX, screenY + TILE);
+      ctx.lineTo(screenX - TILE, screenY + TILE / 2);
+      ctx.closePath();
+      ctx.fill();
 
-  // Cargar imágenes de biomas
-  const imagenes = {};
-  for (const clave in biomasTiles) {
-    imagenes[clave] = await cargarImagen(biomasTiles[clave]);
+      // Añadir etiqueta
+      const etiqueta = document.createElement('div');
+      etiqueta.className = 'etiqueta';
+      etiqueta.textContent = tipo;
+      etiqueta.style.left = `${screenX}px`;
+      etiqueta.style.top = `${screenY}px`;
+      visor.appendChild(etiqueta);
+    }
   }
+}
 
-  for (let y = 0; y < MAP_HEIGHT; y++) {
-    for (let x = 0; x < MAP_WIDTH; x++) {
-      const tipo = biomas[y][x] || 'vacio';
-      const tile = imagenes[tipo];
-      dibujarTile(tile, x, y);
+// Dibujar ríos
+function dibujarRios() {
+  ctx.strokeStyle = '#3ac6ff';
+  ctx.lineWidth = 3;
+  ctx.globalAlpha = 0.6;
+  ctx.beginPath();
+
+  for (const rio of rios) {
+    if (rio.length < 2) continue;
+    const [x0, y0] = rio[0];
+    ctx.moveTo(isoX(x0, y0), isoY(x0, y0));
+
+    for (let i = 1; i < rio.length; i++) {
+      const [xi, yi] = rio[i];
+      ctx.lineTo(isoX(xi, yi), isoY(xi, yi));
     }
   }
 
-  // Dibujar ríos como líneas azules (simplificado)
-  ctx.strokeStyle = 'rgba(100,150,255,0.6)';
-  ctx.lineWidth = 4;
-
-  rios.forEach(rio => {
-    ctx.beginPath();
-    rio.forEach((p, i) => {
-      const isoX = (p.x - p.y) * (TILE_WIDTH / 2) + canvas.width / 2;
-      const isoY = (p.x + p.y) * (TILE_HEIGHT / 2) + TILE_HEIGHT / 2;
-      if (i === 0) ctx.moveTo(isoX, isoY);
-      else ctx.lineTo(isoX, isoY);
-    });
-    ctx.stroke();
-  });
+  ctx.stroke();
+  ctx.globalAlpha = 1.0;
 }
 
-// Iniciar
-dibujarMapa();
+// Obtener color según tipo de bioma
+function obtenerColorBioma(tipo) {
+  switch (tipo) {
+    case 'magma': return '#8b0000';
+    case 'hongos': return '#2e8b57';
+    case 'cristal': return '#87ceeb';
+    case 'ruinas': return '#4b4b4b';
+    case 'lago': return '#1e3f66';
+    case 'vacio': return '#000000';
+    default: return '#222222';
+  }
+}
+
+// Inicializar dibujo
+dibujarTerreno();
+dibujarRios();
