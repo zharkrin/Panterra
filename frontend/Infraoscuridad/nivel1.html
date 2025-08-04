@@ -1,87 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Infraoscuridad - Nivel 1</title>
-  <style>
-    body { margin: 0; background: #111; }
-    canvas { display: block; margin: 0 auto; background: #000; }
-  </style>
-</head>
-<body>
+<head><meta charset="UTF-8"><title>Nivel 1 – Infraoscuridad con Ríos</title>
+<style>body{margin:0;background:#111;}canvas{display:block;margin:0 auto;background:#000;}</style>
+</head><body>
 <canvas id="mapa" width="1600" height="900"></canvas>
-
 <script>
-  const canvas = document.getElementById('mapa');
-  const ctx = canvas.getContext('2d');
-
-  // Configuración
-  const tileWidth = 64;
-  const tileHeight = 32;
-  const mapWidth = 20;
-  const mapHeight = 20;
-  let scale = 1;
-  let offsetX = canvas.width / 2;
-  let offsetY = 100;
-
-  // Matriz de biomas
-  const biomas = [
-    '#444444', // Roca
-    '#6688aa', // Cristal
-    '#447744', // Hongos
-    '#cc3300', // Lava
-    '#003366', // Agua
-    '#999977'  // Ruinas
-  ];
-
-  // Generar mapa aleatorio de biomas
-  const mapaBiomas = [];
-  for (let y = 0; y < mapHeight; y++) {
-    let fila = [];
-    for (let x = 0; x < mapWidth; x++) {
-      fila.push(Math.floor(Math.random() * biomas.length));
+const c=document.getElementById('mapa'),ctx=c.getContext('2d');
+const tx=64, ty=32, w=20, h=20;
+let scale=1, ox=c.width/2, oy=100;
+const biomas=["#444","#668","#447","#c33","#036","#997"];
+const altura=[]; for(let y=0;y<h;y++){altura[y]=[];for(let x=0;x<w;x++){altura[y][x]=Math.random();}}
+const drenajes=[];
+for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  let min = altura[y][x], nx=x, ny=y;
+  [[1,0],[0,1],[-1,0],[0,-1]].forEach(([dx,dy])=>{
+    const xx=x+dx, yy=y+dy;
+    if(yy>=0&&yy<h&&xx>=0&&xx<w && altura[yy][xx]<min){
+      min=altura[yy][xx]; nx=xx; ny=yy;
     }
-    mapaBiomas.push(fila);
-  }
-
-  function drawTile(x, y, color) {
-    const isoX = (x - y) * tileWidth / 2;
-    const isoY = (x + y) * tileHeight / 2;
-
-    ctx.save();
-    ctx.translate(offsetX + isoX * scale, offsetY + isoY * scale);
-    ctx.scale(scale, scale);
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(tileWidth / 2, tileHeight / 2);
-    ctx.lineTo(0, tileHeight);
-    ctx.lineTo(-tileWidth / 2, tileHeight / 2);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function renderMapa() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let y = 0; y < mapHeight; y++) {
-      for (let x = 0; x < mapWidth; x++) {
-        const tipo = mapaBiomas[y][x];
-        const color = biomas[tipo];
-        drawTile(x, y, color);
-      }
-    }
-  }
-
-  renderMapa();
-
-  // Zoom con la rueda
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(0.3, scale), 3);
-    renderMapa();
   });
+  if(ny!==y||nx!==x) drenajes.push({from:{x,y},to:{x:nx,y:ny}});
+}
+
+function drawTile(x,y,color){
+  const ix=(x-y)*tx/2*scale+ox, iy=(x+y)*ty/2*scale+oy;
+  ctx.save(); ctx.translate(ix,iy); ctx.scale(scale,scale);
+  ctx.beginPath();
+  ctx.moveTo(0,0); ctx.lineTo(tx/2,ty/2); ctx.lineTo(0,ty);
+  ctx.lineTo(-tx/2,ty/2); ctx.closePath();
+  ctx.fillStyle=color; ctx.fill(); ctx.restore();
+}
+
+function drawRiver(from,to){
+  const aX=(from.x-from.y)*tx/2*scale + ox;
+  const aY=(from.x+from.y)*ty/2*scale + oy;
+  const bX=(to.x-to.y)*tx/2*scale + ox;
+  const bY=(to.x+to.y)*ty/2*scale + oy;
+  ctx.beginPath();
+  ctx.moveTo(aX,aY); ctx.lineTo(bX,bY);
+  ctx.stroke();
+}
+
+function render(){
+  ctx.clearRect(0,0,c.width,c.height);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const tipo=Math.floor(altura[y][x]*biomas.length);
+    drawTile(x,y,biomas[tipo]);
+  }
+  ctx.save();
+  ctx.lineWidth=2; ctx.strokeStyle="#09f"; ctx.globalAlpha=0.8;
+  drenajes.forEach(d=>drawRiver(d.from,d.to));
+  ctx.restore();
+}
+
+c.addEventListener('wheel',e=>{
+  e.preventDefault();
+  scale+=e.deltaY*-0.001; scale=Math.min(Math.max(0.4,scale),3);
+  render();
+});
+
+render();
 </script>
-</body>
-</html>
+</body></html>
