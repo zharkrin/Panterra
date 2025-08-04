@@ -1,62 +1,38 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Nivel 3 – Infraoscuridad</title>
-<style>body{margin:0;background:#111;}canvas{display:block;margin:0 auto;background:#000;}</style>
-</head><body>
-<canvas id="mapa" width="1600" height="900"></canvas>
-<script>
-const c=document.getElementById('mapa'),ctx=c.getContext('2d');
-const tx=64, ty=32, w=20, h=20;
-let scale=1, ox=c.width/2, oy=100;
-const biomas=["#111","#223","#113","#400","#022","#332"];
-const altura=[]; for(let y=0;y<h;y++){altura[y]=[];for(let x=0;x<w;x++){altura[y][x]=Math.pow(Math.random(),2);}}
-const drenajes=[];
-for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-  let min = altura[y][x], nx=x, ny=y;
-  [[1,0],[0,1],[-1,0],[0,-1]].forEach(([dx,dy])=>{
-    const xx=x+dx, yy=y+dy;
-    if(yy>=0&&yy<h&&xx>=0&&xx<w && altura[yy][xx]<min){
-      min=altura[yy][xx]; nx=xx; ny=yy;
-    }
-  });
-  if(ny!==y||nx!==x) drenajes.push({from:{x,y},to:{x:nx,y:ny}});
-}
+// frontend/static/js/rios.js
 
-function drawTile(x,y,color){
-  const ix=(x-y)*tx/2*scale+ox, iy=(x+y)*ty/2*scale+oy;
-  ctx.save(); ctx.translate(ix,iy); ctx.scale(scale,scale);
-  ctx.beginPath();
-  ctx.moveTo(0,0); ctx.lineTo(tx/2,ty/2); ctx.lineTo(0,ty);
-  ctx.lineTo(-tx/2,ty/2); ctx.closePath();
-  ctx.fillStyle=color; ctx.fill(); ctx.restore();
-}
+export function generarRios(altura, ancho, alto) {
+  const drenajes = [];
+  const flujo = Array.from({ length: alto }, () => Array(ancho).fill(0));
 
-function drawRiver(from,to){
-  const aX=(from.x-from.y)*tx/2*scale + ox;
-  const aY=(from.x+from.y)*ty/2*scale + oy;
-  const bX=(to.x-to.y)*tx/2*scale + ox;
-  const bY=(to.x+to.y)*ty/2*scale + oy;
-  ctx.beginPath(); ctx.moveTo(aX,aY); ctx.lineTo(bX,bY); ctx.stroke();
-}
-
-function render(){
-  ctx.clearRect(0,0,c.width,c.height);
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-    const tipo=Math.floor(altura[y][x]*biomas.length);
-    drawTile(x,y,biomas[tipo]);
+  function esMenor(x, y, nx, ny) {
+    return altura[ny] && altura[ny][nx] < altura[y][x];
   }
-  ctx.save();
-  ctx.lineWidth=2; ctx.strokeStyle="#0cf"; ctx.globalAlpha=0.8;
-  drenajes.forEach(d=>drawRiver(d.from,d.to));
-  ctx.restore();
+
+  function encontrarSalida(x, y) {
+    const vecinos = [[1,0],[0,1],[-1,0],[0,-1]];
+    let minAltura = altura[y][x], destino = { x, y };
+    for (const [dx, dy] of vecinos) {
+      const nx = x + dx, ny = y + dy;
+      if (nx >= 0 && ny >= 0 && nx < ancho && ny < alto && esMenor(x, y, nx, ny)) {
+        if (altura[ny][nx] < minAltura) {
+          destino = { x: nx, y: ny };
+          minAltura = altura[ny][nx];
+        }
+      }
+    }
+    return destino;
+  }
+
+  for (let y = 0; y < alto; y++) {
+    for (let x = 0; x < ancho; x++) {
+      const destino = encontrarSalida(x, y);
+      if (destino.x !== x || destino.y !== y) {
+        drenajes.push({ from: { x, y }, to: destino });
+        flujo[destino.y][destino.x]++;
+      }
+    }
+  }
+
+  const rios = drenajes.filter(d => flujo[d.to.y][d.to.x] > 1);
+  return rios;
 }
-
-c.addEventListener('wheel',e=>{
-  e.preventDefault();
-  scale+=e.deltaY*-0.001; scale=Math.min(Math.max(0.4,scale),3);
-  render();
-});
-
-render();
-</script>
-</body></html>
